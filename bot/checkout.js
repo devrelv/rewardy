@@ -1,77 +1,120 @@
 var util = require('util');
-var express = require('express');
-var router = express.Router();
+var builder = require('botbuilder');
+var botUtils = require('./core/utils');
+var siteUrl = require('./core/site-url');
+var orderService = require('../services/orders');
 
-var orderService = require('./services/orders');
-var bot = require('./bot');
-var botUtils = require('./bot/core/utils');
+// Checkout flow
+var RestartMessage = 'restart';
+var StartOver = 'start_over';
+var KeepGoing = 'continue';
+var Help = 'help';
 
-/* GET Checkout */
-router.get('/', function (req, res, next) {
-  // orderId and user address
-  var orderId = req.query.orderId;
-  var address = botUtils.deserializeAddress(req.query.address);
-  console.log('user address is', address);
+var lib = new builder.Library('checkout');
+lib.dialog('/', [
+    function (session, args, next) {
+        args = args || {};
+        var order = args.order;
 
-  orderService.retrieveOrder(orderId).then(function (order) {
-    // Check order exists
-    if (!order) {
-      throw new Error('Order ID not found');
+        if (!order) {
+            // 'Changed my mind' was pressed, continue to next step and prompt for options
+            return next();
+        }
+
+        // Serialize user address
+        var addressSerialized = botUtils.serializeAddress(session.message.address);
+
+        // Create order (with no payment - pending)
+        orderService.placePendingOrder(order).then(function (order) {
+
+            // Build Checkout url using previously stored Site url
+            var checkoutUrl = util.format(
+                '%s/checkout?orderId=%s&address=%s',
+                siteUrl.retrieve(),
+                encodeURIComponent(order.id),
+                encodeURIComponent(addressSerialized));
+
+            var messageText = session.gettext('final_price', order.selection.price);
+            var card = new builder.HeroCard(session)
+                .text(messageText)
+                .buttons([
+                    builder.CardAction.openUrl(session, checkoutUrl, 'add_credit_card'),
+                    builder.CardAction.imBack(session, session.gettext(RestartMessage), RestartMessage)
+                ]);
+
+            session.send(new builder.Message(session)
+                .addAttachment(card));
+        });
+    },
+    function (session, args) {
+        builder.Prompts.choice(session, 'select_how_to_continue', [
+            session.gettext(StartOver),
+            session.gettext(KeepGoing),
+            session.gettext(Help)
+        ]);
+    },
+    function (session, args) {
+        switch (args.response.entity) {
+            case KeepGoing:
+                return session.reset();
+            case StartOver:
+                return session.reset('/');
+            case Help:
+                return session.beginDialog('help:/');
+        }
     }
+]);
 
-    // Check order if order is already processed
-    if (order.payed) {
-      // Dispatch completion dialog
-      bot.beginDialog(address, 'checkout:completed', { orderId: orderId });
+// Checkout completed (initiated from web application. See /checkout.js in the root folder)
+lib.dialog('completed', function (session, args, next) {
+    args = args || {};
+    var orderId = args.orderId;
 
-      // Show completion
-      return res.render('checkout/completed', {
-        title: 'Contoso Flowers - Order Processed',
-        order: order
-      });
-    }
+    // Retrieve order and create ReceiptCard
+    orderService.retrieveOrder(orderId).then(function (order) {
+        if (!order) {
+            throw new Error(session.gettext('order_not_found'));
+        }
 
-    // Payment form
-    return res.render('checkout/index', {
-      title: 'Contoso Flowers - Order Checkout',
-      address: req.query.address,
-      order: order
+        var messageText = session.gettext(
+            'order_details',
+            order.id,
+            order.selection.name,
+            order.details.recipient.firstName,
+            order.details.recipient.lastName,
+            order.details.note);
+
+        var receiptCard = new builder.ReceiptCard(session)
+            .title(order.paymentDetails.creditcardHolder)
+            .facts([
+                builder.Fact.create(session, order.id, 'order_number'),
+                builder.Fact.create(session, offuscateNumber(order.paymentDetails.creditcardNumber), 'payment_method')
+            ])
+            .items([
+                builder.ReceiptItem.create(session, order.selection.price, order.selection.name)
+                    .image(builder.CardImage.create(session, order.selection.imageUrl))
+            ])
+            .total(order.selection.price)
+            .buttons([
+                builder.CardAction.openUrl(session, 'https://dev.botframework.com/', 'more_information')
+            ]);
+
+        var message = new builder.Message(session)
+            .text(messageText)
+            .addAttachment(receiptCard);
+
+        session.endDialog(message);
+    }).catch(function (err) {
+        session.endDialog(session.gettext('error_ocurred', err.message));
     });
-
-  }).catch(function (err) {
-    next(err);
-  });
-
 });
 
-/* POST Checkout */
-router.post('/', function (req, res, next) {
-  // orderId and user address
-  var orderId = req.body.orderId;
-  var address = botUtils.deserializeAddress(req.body.address);
-  console.log('user address is', address);
+// Helpers
+function offuscateNumber(cardNumber) {
+    return cardNumber.substring(0, 4) + ' ****';
+}
 
-  // Payment information
-  var paymentDetails = {
-    creditcardNumber: req.body.creditcard,
-    creditcardHolder: req.body.fullname
-  };
-
-  // Complete order
-  orderService.confirmOrder(orderId, paymentDetails).then(function (processedOrder) {
-
-    // Dispatch completion dialog
-    bot.beginDialog(address, 'checkout:completed', { orderId: orderId });
-
-    // Show completion
-    return res.render('checkout/completed', {
-      title: 'Contoso Flowers - Order processed',
-      order: processedOrder
-    });
-
-  }).catch(function (err) {
-    next(err);
-  });
-});
-
-module.exports = router;
+// Export createLibrary() function
+module.exports.createLibrary = function () {
+    return lib.clone();
+};
