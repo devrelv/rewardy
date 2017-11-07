@@ -53,7 +53,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var viberChannel = new viber.ViberEnabledConnector(viberOptions);
 bot.connect(viber.ViberChannelId, viberChannel);
 
-app.use('/viber/webhook', viberChannel.listen());
+// app.use('/viber/webhook', viberChannel.listen());
 
 app.use(bodyParser.json()); // Only the next lines should be on json
 
