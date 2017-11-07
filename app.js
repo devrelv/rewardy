@@ -5,6 +5,8 @@ var path = require('path');
 var favicon = require('serve-favicon');
 
 
+
+
 // Web app
 var app = express();
 var bodyParser = require('body-parser');
@@ -15,25 +17,6 @@ app.set('view engine', 'pug');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Register your web app routes here
-app.get('/', function (req, res, next) {
-  res.render('index', { title: 'Reward app' });
-});
-
-// Register Checkout page
-var checkout = require('./checkout');
-app.use('/checkout', checkout);
-
-// Register Bot
-var bot = require('./bot');
-app.post('/api/messages', bot.listen());
-
-// Catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
 
 // Error handlers
 
@@ -47,6 +30,36 @@ if (app.get('env') === 'development') {
     });
   });
 }
+
+
+// Viber initialization
+// var viber = require('botbnuilder-viber');
+
+const viberOptions = {
+  Token: process.env.VIBER_TOKEN,
+  Name: process.env.BOT_NAME,
+  AvatarUrl: process.env.BOT_AVATAR
+};
+//var viberChannel = new viber.ViberEnabledConnector(viberOptions);
+//bot.connector(viber.ViberChannelId, viberChannel)
+//app.use('/viber/webhook', viberChannel.listen())
+
+// Register your web app routes here
+app.get('/', function (req, res, next) {
+  res.render('index', { title: 'Reward app' });
+});
+
+// Register Bot
+var bot = require('./bot');
+
+app.post('/api/messages', bot.listen());
+
+// Catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
 // Production error handler, no stacktraces leaked to user
 app.use(function (err, req, res, next) {

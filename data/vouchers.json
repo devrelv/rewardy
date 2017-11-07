@@ -1,37 +1,37 @@
 [
 	{
-		"id": "513e",
-		"title": "$10 Gift Card",
+		"id": "10$ on Amazon",
+		"title": "$10 Gift Card for 1,000 points",
 		"store": "Amazon",
 		"description": "Online Shopping for Electronics, Apparel, Books & more",
-		"imageUrl": "https://github.com/devrelv/vale/blob/master/redeem_amazon.png?raw=true",
+		"imageUrl": "https://rewardy.co/img/vouchers/amazon.jpg",
 		"points": 1000,
 		"cta": "1,000 points"
 	},
 	{
-		"id": "65a1",
-		"title": "$10 Gift Card",
+		"id": "10$ on Xbox",
+		"title": "$10 Gift Card for 1,000 points",
 		"store": "Xbox",
 		"description": "Games and entertainment on Xbox or Windows",
-		"imageUrl": "https://github.com/devrelv/vale/blob/master/redeem_xbox.png?raw=true",
+		"imageUrl": "https://rewardy.co/img/vouchers/xbox.jpg",
 		"points": 1000,
 		"cta": "1,000 points"
 	},
 	{
-		"id": "1d32",
-		"title": "$10 Gift Card",
+		"id": "10$ on iTunes",
+		"title": "$10 Gift Card for 1,000 points",
 		"store": "iTunes",
 		"description": "App Store, iTunes Store and even iBooks Store",
-		"imageUrl": "https://github.com/devrelv/vale/blob/master/redeem_itunes.png?raw=true",
+		"imageUrl": "https://rewardy.co/img/vouchers/iTunes.jpg",
 		"points": 1000,
 		"cta": "1,000 points"
 	},
 	{
-		"id": "2d54",
-		"title": "$10 Gift Card",
+		"id": "10$ on Google",
+		"title": "$10 Gift Card for 1,000 points",
 		"store": "Google",
 		"description": "Music, movies, TV shows, books, and Android apps and games",
-		"imageUrl": "https://github.com/devrelv/vale/blob/master/redeem_google.png?raw=true",
+		"imageUrl": "https://rewardy.co/img/vouchers/google-play.jpg",
 		"points": 1000,
 		"cta": "1,000 points"
 	}
