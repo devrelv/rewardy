@@ -23,7 +23,7 @@ function voucherAsAttachment(voucher, session) {
             //     .title(voucher.cta)
             //     .type('postBack')
             //     .value('https://www.bing.com/search?q=hotels+in+' + encodeURIComponent(voucher.points))
-            builder.CardAction.imBack(session, getVoucherText(voucher), voucher.cta)
+            builder.CardAction.imBack(session, getVoucherText(voucher), voucher.voucherId)
         ]);
     }
     catch (err) {
@@ -34,7 +34,8 @@ function voucherAsAttachment(voucher, session) {
 }
 
 function getVoucherText(voucher) {
-    return 'voucher #' + voucher.voucherId + ': ' + voucher.title + ' on ' + voucher.store + ' for ' + voucher.cta;
+    // return 'voucher #' + voucher.voucherId + ': ' + voucher.title + ' on ' + voucher.store + ' for ' + voucher.cta;
+    return voucher.voucherId;
 }
 
 let vouchersData = [];
@@ -89,7 +90,8 @@ lib.dialog('/', [
             }
             else {
                 // look for the voucher:
-                var voucherId = args.response.split(':')[0].split('#')[1];
+                // var voucherId = args.response.split(':')[0].split('#')[1];
+                var voucherId = args.response;
                 var selectedVoucher = vouchersData[voucherId];
                 if (!selectedVoucher) {
                     throw "voucher " + voucherId + " not found";
