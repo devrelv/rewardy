@@ -119,11 +119,7 @@ bot.set('localizerSettings', {
 });
 
 // Sub-Dialogs
-bot.library(require('./shop').createLibrary());
 bot.library(require('./product-selection').createLibrary());
-bot.library(require('./delivery').createLibrary());
-bot.library(require('./details').createLibrary());
-bot.library(require('./checkout').createLibrary());
 bot.library(require('./settings').createLibrary());
 bot.library(require('./help').createLibrary());
 bot.library(require('./login').createLibrary());
@@ -176,7 +172,6 @@ var connectorListener = connector.listen();
 function listen() {
     return function (req, res) {
         // Capture the url for the hosted application
-        // We'll later need this url to create the checkout link
         var url = req.protocol + '://' + req.get('host');
         siteUrl.save(url);
         connectorListener(req, res);
