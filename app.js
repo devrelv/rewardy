@@ -4,6 +4,15 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 
+// Viber initialization
+var viber = require('botbuilder-viber');
+
+const viberOptions = {
+  Token: process.env.VIBER_TOKEN,
+  Name: process.env.BOT_NAME,
+  AvatarUrl: process.env.BOT_AVATAR
+};
+var viberChannel = new viber.ViberEnabledConnector(viberOptions);
 
 // Web app
 var app = express();
@@ -26,6 +35,9 @@ app.use('/checkout', checkout);
 
 // Register Bot
 var bot = require('./bot');
+bot.connector(viber.ViberChannelId, viberChannel)
+app.use('/viber/webhook', viberChannel.listen())
+
 app.post('/api/messages', bot.listen());
 
 // Catch 404 and forward to error handler
