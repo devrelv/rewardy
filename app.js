@@ -57,6 +57,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(bodyParser.json()); // Only the next lines should be on json
 
+app.get('/viber/webhook', function (req, res) {
+  console.log(req);
+  res.writeHead(200);
+  res.end();
+});
 app.post('/viber/webhook', function (req, res) {
   console.log(req);
   res.writeHead(200);
