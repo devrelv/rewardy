@@ -44,12 +44,6 @@ app.get('/', function (req, res, next) {
   res.render('index', { title: 'Reward app' });
 });
 
-/*
-app.post('/viber/webhook', function (req, res) {
-  console.log(req);
-  res.writeHead(200);
-  res.end();
-});*/
 
 // Register Bot
 var bot = require('./bot');
@@ -62,6 +56,13 @@ bot.connect(viber.ViberChannelId, viberChannel);
 app.use('/viber/webhook', viberChannel.listen());
 
 app.use(bodyParser.json()); // Only the next lines should be on json
+
+app.post('/viber/webhook', function (req, res) {
+  console.log(req);
+  res.writeHead(200);
+  res.end();
+});
+
 app.post('/api/messages', bot.listen());
 
 
