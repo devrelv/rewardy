@@ -119,8 +119,6 @@ bot.set('localizerSettings', {
 });
 
 // Sub-Dialogs
-bot.library(require('./product-selection').createLibrary());
-bot.library(require('./settings').createLibrary());
 bot.library(require('./help').createLibrary());
 bot.library(require('./login').createLibrary());
 bot.library(require('./redeem').createLibrary());
