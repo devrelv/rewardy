@@ -50,8 +50,8 @@ var bot = require('./bot');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var viberChannel = new viber.ViberEnabledConnector(viberOptions);
-bot.connect(viber.ViberChannelId, viberChannel);
+// var viberChannel = new viber.ViberEnabledConnector(viberOptions);
+// bot.connect(viber.ViberChannelId, viberChannel);
 
 // app.use('/viber/webhook', viberChannel.listen());
 
