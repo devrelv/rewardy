@@ -33,16 +33,14 @@ if (app.get('env') === 'development') {
 
 
 // Viber initialization
-// var viber = require('botbnuilder-viber');
+var viber = require('botbuilder-viber');
 
 const viberOptions = {
   Token: process.env.VIBER_TOKEN,
   Name: process.env.BOT_NAME,
   AvatarUrl: process.env.BOT_AVATAR
 };
-//var viberChannel = new viber.ViberEnabledConnector(viberOptions);
-//bot.connector(viber.ViberChannelId, viberChannel)
-//app.use('/viber/webhook', viberChannel.listen())
+
 
 // Register your web app routes here
 app.get('/', function (req, res, next) {
@@ -51,6 +49,10 @@ app.get('/', function (req, res, next) {
 
 // Register Bot
 var bot = require('./bot');
+
+var viberChannel = new viber.ViberEnabledConnector(viberOptions);
+app.use('/viber/webhook', viberChannel.listen())
+bot.connect(viber.ViberChannelId, viberChannel);
 
 app.post('/api/messages', bot.listen());
 
