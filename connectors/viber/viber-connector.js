@@ -12,10 +12,10 @@ const toYAML = require('winston-console-formatter'); // makes the output more fr
 const async = require("async");
 /*
 Until BotBuilder supports custom channels,
-we have to use Kik's channelId to make BotBuilder play nice with user data.
-We can use any other channel which supports buttons instead of Kik here.
+we have to use Slack's channelId to make BotBuilder play nice with user data.
+We can use any other channel which supports buttons instead of Slack here.
 */
-const ViberChannelId = 'kik'
+const ViberChannelId = 'slack'
 
 const logger = function() {
     const logger = new winston.Logger({ level: "debug" }); // We recommend DEBUG for development
