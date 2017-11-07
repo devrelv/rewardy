@@ -101,9 +101,7 @@ var bot = new builder.UniversalBot(connector, [
             logger.log.error('index: builder.UniversalBot error occured', {error: serializeError(err)});
             throw err;            
         }
-        
     }
-
 ]);
 
 
@@ -185,7 +183,12 @@ function sendMessage(message) {
     bot.send(message);
 }
 
+function connect(channelId, connector) {
+    bot.connector(channelId, connector);
+}
+
 module.exports = {
+    connect: connect,
     listen: listen,
     beginDialog: beginDialog,
     sendMessage: sendMessage
