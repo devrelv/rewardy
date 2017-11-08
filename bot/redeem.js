@@ -60,7 +60,7 @@ lib.dialog('/', [
                 .then(function (vouchers) {
                     vouchersData = vouchers;
                     let message;
-                    if (utils.isCarouselSupported(session.message.source)) {
+                    if (!utils.isCarouselSupported(session.message.source)) {
                         var voucherCard = new builder.HeroCard()
                             .title()
                             // .buttons(vouchers.map((voucher) => { return [builder.CardAction.imBack(session, voucher.voucherId, voucher.voucherId)]; }));
