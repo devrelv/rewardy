@@ -1,7 +1,8 @@
 [
 	{
-		"id": "10$ on Amazon",
-		"title": "$10 Gift Card for 1,000 points",
+		"id": "$10 on Amazon",
+		"title": "$10 Amazon Gift Card for 1,000 points",
+		"emailTitle": "$10 Gift Card on Amazon",
 		"store": "Amazon",
 		"description": "Online Shopping for Electronics, Apparel, Books & more",
 		"imageUrl": "https://rewardy.co/img/vouchers/amazon.jpg",
@@ -9,8 +10,9 @@
 		"cta": "1,000 points"
 	},
 	{
-		"id": "10$ on Xbox",
-		"title": "$10 Gift Card for 1,000 points",
+		"id": "$10 on Xbox",
+		"title": "$10 Xbox Gift Card for 1,000 points",
+		"emailTitle": "$10 Gift Card on Xbox",
 		"store": "Xbox",
 		"description": "Games and entertainment on Xbox or Windows",
 		"imageUrl": "https://rewardy.co/img/vouchers/xbox.jpg",
@@ -18,8 +20,9 @@
 		"cta": "1,000 points"
 	},
 	{
-		"id": "10$ on iTunes",
-		"title": "$10 Gift Card for 1,000 points",
+		"id": "$10 on iTunes",
+		"title": "$10 iTunes Gift Card for 1,000 points",
+		"emailTitle": "$10 Gift Card on iTunes",
 		"store": "iTunes",
 		"description": "App Store, iTunes Store and even iBooks Store",
 		"imageUrl": "https://rewardy.co/img/vouchers/iTunes.jpg",
@@ -27,8 +30,9 @@
 		"cta": "1,000 points"
 	},
 	{
-		"id": "10$ on Google",
-		"title": "$10 Gift Card for 1,000 points",
+		"id": "$10 on Google",
+		"title": "$10 Google Gift Card for 1,000 points",
+		"emailTitle": "$10 Gift Card on Google",
 		"store": "Google",
 		"description": "Music, movies, TV shows, books, and Android apps and games",
 		"imageUrl": "https://rewardy.co/img/vouchers/google-play.jpg",

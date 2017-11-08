@@ -10,6 +10,7 @@ var mailSender = require('./core/mail-sender.js');
 var consts = require('./core/const');
 var hash = require('object-hash');
 const chatbase = require('./core/chatbase');
+const utils = require('./core/utils');
 
 // Helpers
 function voucherAsAttachment(voucher, session) {
@@ -30,7 +31,16 @@ function voucherAsAttachment(voucher, session) {
         logger.log.error('redeem: voucherAsAttachment error occured', {error: serializeError(err), voucher: voucher});        
         throw err;
     }
-    
+}
+
+function voucherAsClassic(voucher, session, builder) {
+    try {
+            return builder.CardAction.imBack(session, voucher.title, voucher.title);
+    }
+    catch (err) {
+        logger.log.error('redeem: voucherAsClassic error occured', {error: serializeError(err), voucher: voucher});        
+        throw err;
+    }
 }
 
 function getVoucherText(voucher) {
@@ -38,7 +48,7 @@ function getVoucherText(voucher) {
     return voucher.voucherId;
 }
 
-let vouchersData = [];
+let vouchersData;
 
 lib.dialog('/', [
     // Destination
@@ -51,14 +61,25 @@ lib.dialog('/', [
             Store
                 .fetchVouchers()
                 .then(function (vouchers) {
-                    for (var i=0; i<vouchers.length; i++) {
-                        vouchersData[vouchers[i].voucherId] = vouchers[i];
-                    }
-                    var message = new builder.Message()
+                    vouchersData = vouchers;
+                    let message;
+                    if (!utils.isCarouselSupported(session.message.source)) {
+                        var voucherCard = new builder.HeroCard()
+                            .title()
+                            // .buttons(vouchers.map((voucher) => { return [builder.CardAction.imBack(session, voucher.voucherId, voucher.voucherId)]; }));
+                            .buttons(vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); }));
+                    
+                        message = new builder.Message(session).addAttachment(voucherCard);
+
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection - Simple', null, false, false);                        
+                    } else {
+                        message = new builder.Message()
                         .attachmentLayout(builder.AttachmentLayout.carousel)
                         .attachments(vouchers.map((voucher) => { return voucherAsAttachment(voucher, session); }));
     
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection', null, false, false);                                                   
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection - Carousel', null, false, false);
+                    }
+                    
                     builder.Prompts.text(session, message);
 
                     // Getting back to menu option:
@@ -92,7 +113,13 @@ lib.dialog('/', [
                 // look for the voucher:
                 // var voucherId = args.response.split(':')[0].split('#')[1];
                 var voucherId = args.response;
-                var selectedVoucher = vouchersData[voucherId];
+                var selectedVoucher;
+                for (var i=0; i<vouchersData.length; i++) {
+                    if (vouchersData[i].voucherId == voucherId || vouchersData[i].title == voucherId) {
+                        selectedVoucher = vouchersData[i];
+                        break;
+                    }
+                }
                 if (!selectedVoucher) {
                     throw "voucher " + voucherId + " not found";
                 }
@@ -110,8 +137,7 @@ lib.dialog('/', [
                     session.say('redeem.explanation');
                     mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, session.userData.sender.email, 
                             [{key: '%VOUCHER_ID%', value: selectedVoucher.voucherId},
-                            {key: '%VOUCHER_TITLE%', value: selectedVoucher.title},
-                            {key: '%VOUCHER_STORE%', value: selectedVoucher.store},
+                            {key: '%VOUCHER__EMAIL_TITLE%', value: selectedVoucher.emailTitle},
                             {key: '%VOUCHER_CTA%', value: selectedVoucher.cta},
                             {key: '%VOUCHER_IMAGE_URL%', value: selectedVoucher.imageUrl},
                             {key: '%REDEEM_CONFIRMATION_URL%', value: get_redeem_confirmation_url(selectedVoucher, session.userData.sender.user_id, session.userData.sender.email)},

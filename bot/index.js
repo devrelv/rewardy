@@ -84,6 +84,7 @@ var bot = new builder.UniversalBot(connector, [
                     // User typed something that we can't understand
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, null, true, false);
                 } else {
+                    session.say('unknown_user_command');
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get Back To Menu', false, false);
                     
                 }
@@ -140,6 +141,32 @@ bot.on('conversationUpdate', function (message) {
         });
     }
 });
+
+bot.on('contactRelationUpdate', function (data) {
+    bot.beginDialog(data.address, '/');
+});
+
+
+bot.on('ping', function (data) {
+    bot.beginDialog(data.address, '/');
+});
+
+
+bot.on('event', function (data) {
+    bot.beginDialog(data.address, '/');
+});
+
+
+bot.on('invoke', function (data) {
+    bot.beginDialog(data.address, '/');
+});
+
+bot.on('messageReaction', function (data) {
+    bot.beginDialog(data.address, '/');
+});
+
+
+
 
 // Cache of localized regex to match selection from main options
 var LocalizedRegexCache = {};
