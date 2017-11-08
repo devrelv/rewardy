@@ -84,13 +84,13 @@ lib.dialog('/', [
 
                     // Getting back to menu option:
                     // TODO: Replace "Back To Menu" and "Or get back to main menu" with 'redeem.back_to_menu_user_text' and 'redeem.back_to_menu_displayed'
-                    var cardActions = [builder.CardAction.imBack(session, 'Back To Menu', 'Or get back to main menu')];
+                    var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
                     
                     var card = new builder.HeroCard()
-                        .title()
+                        .title('Or')
                         .buttons(cardActions);
                 
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Back To Menu' , null, false, false);            
+                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
                         
                     session.send(new builder.Message(session)
                         .addAttachment(card));
@@ -104,7 +104,7 @@ lib.dialog('/', [
         try {
             
             if (args.response == session.gettext('redeem.back_to_menu_user_text')) {
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Back To Menu', false, false);
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get back to menu', false, false);
                 
                 session.endDialog();
                 session.replaceDialog('/');
