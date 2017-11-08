@@ -86,7 +86,8 @@ lib.dialog('/', [
                         builder.Prompts.text(session, message);
 
                         // Getting back to menu option:
-                        var cardActions = [builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text'))];
+                        // TODO: replace "Get back to menu" with "session.gettext('redeem.back_to_menu_user_text')" - For some reason the locale is not  working here
+                        var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
                         
                         var card = new builder.HeroCard()
                             .title('Or')
