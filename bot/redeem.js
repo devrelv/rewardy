@@ -65,7 +65,7 @@ lib.dialog('/', [
                         simpleChoicesButtons.push(builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu'));
 
                         var voucherCard = new builder.HeroCard()
-                            .title()
+                            .title('redeem.select_voucher')
                             .buttons(simpleChoicesButtons);
                         
                         message = new builder.Message(session).addAttachment(voucherCard);
