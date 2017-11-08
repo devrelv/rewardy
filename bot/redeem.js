@@ -61,10 +61,12 @@ lib.dialog('/', [
                     vouchersData = vouchers;
                     let message;
                     if (!utils.isCarouselSupported(session.message.source)) {
+                        var simpleChoicesButtons = vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); });
+                        simpleChoicesButtons.push(builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu'));
+
                         var voucherCard = new builder.HeroCard()
                             .title()
-                            // .buttons(vouchers.map((voucher) => { return [builder.CardAction.imBack(session, voucher.voucherId, voucher.voucherId)]; }));
-                            .buttons(vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); }));
+                            .buttons(simpleChoicesButtons);
                         
                         message = new builder.Message(session).addAttachment(voucherCard);
 
@@ -82,25 +84,27 @@ lib.dialog('/', [
                         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection - Carousel', null, false, false);
 
                         builder.Prompts.text(session, message);
-                    }    
-                    // Getting back to menu option:
-                    // TODO: Replace "Back To Menu" and "Or get back to main menu" with 'redeem.back_to_menu_user_text' and 'redeem.back_to_menu_displayed'
-                    var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
-                    
-                    var card = new builder.HeroCard()
-                        .title('Or')
-                        .buttons(cardActions);
-                
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
+
+                        // Getting back to menu option:
+                        // TODO: Replace "Back To Menu" and "Or get back to main menu" with 'redeem.back_to_menu_user_text' and 'redeem.back_to_menu_displayed'
+                        var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
                         
-                    session.send(new builder.Message(session)
-                        .addAttachment(card));
+                        var card = new builder.HeroCard()
+                            .title('Or')
+                            .buttons(cardActions);
                     
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
+                            
+                        session.send(new builder.Message(session)
+                            .addAttachment(card));
+                    } 
                 });
         }
         catch (err){
-            logger.log.error('redeem: / dialog error occured', {error: serializeError(err)});        
-            throw err;
+            session.say('redeem.general_error');
+            logger.log.error('redeem: / dialog 1st function error occured', {error: serializeError(err)});        
+            session.endDialog();
+            session.replaceDialog('/');
         }
     }, function (session, args) {
         try {
