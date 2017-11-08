@@ -52,27 +52,32 @@ lib.dialog('help_get_user_message', [
         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.confirm_sending'), null, false, false);                                                                                                                                                                  
         builder.Prompts.confirm(session, session.gettext('help.confirm_sending'));
     }, function (session, args) {
-        if (args.response) {
-            mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_HELP_QUESTION, 'hello@rewardy.co', 
-                    [{key: '%USER_EMAIL%', value: session.userData.sender.email},
-                    {key: '%DATE%', value: (new Date()).toUTCString()},
-                    {key: '%USER_MESSAGE%', value: session.privateConversationData.userQuestion},
-                    {key: '%USER_DETAILS%', value: JSON.stringify(session.userData.sender)}]).then (data =>
-            {
-                session.endDialog(session.gettext('help.message_received'));
+        try {
+            if (args.response) {
+                var details = {sender: session.userData.sender, platform: session.message.source};
+                mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_HELP_QUESTION, 'hello@rewardy.co', 
+                        [{key: '%USER_EMAIL%', value: session.userData.sender.email},
+                        {key: '%DATE%', value: (new Date()).toUTCString()},
+                        {key: '%USER_MESSAGE%', value: session.privateConversationData.userQuestion},
+                        {key: '%USER_DETAILS%', value: JSON.stringify(serializeError(details))}]).then (data =>
+                {
+                    session.endDialog(session.gettext('help.message_received'));
+                    session.replaceDialog('/');
+                }).catch (err => {
+                    logger.log.error('help: help_get_user_message dialog, 3rd func mailSender.sendTemplateMail error', {error: serializeError(err)});            
+                
+                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.error_sending_email'), null, false, false);                                                                                                                                                                          
+                    session.say(session.gettext('help.error_sending_email'));
+                    session.replaceDialog('help_get_user_message');
+                });
+            } else {
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.cancelling'), null, false, false);                                                                                                                                                                                      
+                session.endDialog(session.gettext('help.cancelling'))
                 session.replaceDialog('/');
-            }).catch (err => {
-                logger.log.error('help: help_get_user_message dialog, 3rd func mailSender.sendTemplateMail error', {error: serializeError(err)});            
-            
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.error_sending_email'), null, false, false);                                                                                                                                                                          
-                session.say(session.gettext('help.error_sending_email'));
-                session.replaceDialog('help_get_user_message');
-            });
-        } else {
-            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.cancelling'), null, false, false);                                                                                                                                                                                      
-            session.endDialog(session.gettext('help.cancelling'))
-            session.replaceDialog('/');
-    }
+            }
+        } catch (err) {
+            logger.log.error('help: help_get_user_message dialog, 3rd error', {error: serializeError(err)});                        
+        }
     }]);
 
 // TODO: use locale for the messages
