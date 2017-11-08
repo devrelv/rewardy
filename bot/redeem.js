@@ -62,10 +62,10 @@ lib.dialog('/', [
                     let message;
                     if (!utils.isCarouselSupported(session.message.source)) {
                         var simpleChoicesButtons = vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); });
-                        simpleChoicesButtons.push(builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu'));
+                        simpleChoicesButtons.push(builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text')));
 
                         var voucherCard = new builder.HeroCard()
-                            .title('redeem.select_voucher')
+                            .title(session.gettext('redeem.select_voucher'))
                             .buttons(simpleChoicesButtons);
                         
                         message = new builder.Message(session).addAttachment(voucherCard);
@@ -86,14 +86,13 @@ lib.dialog('/', [
                         builder.Prompts.text(session, message);
 
                         // Getting back to menu option:
-                        // TODO: Replace "Back To Menu" and "Or get back to main menu" with 'redeem.back_to_menu_user_text' and 'redeem.back_to_menu_displayed'
-                        var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
+                        var cardActions = [builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text'))];
                         
                         var card = new builder.HeroCard()
                             .title('Or')
                             .buttons(cardActions);
                     
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.back_to_menu_user_text') , null, false, false);            
                             
                         session.send(new builder.Message(session)
                             .addAttachment(card));
@@ -110,7 +109,7 @@ lib.dialog('/', [
         try {
             
             if (args.response == session.gettext('redeem.back_to_menu_user_text')) {
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get back to menu', false, false);
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, session.gettext('redeem.back_to_menu_user_text'), false, false);
                 
                 session.endDialog();
                 session.replaceDialog('/');
