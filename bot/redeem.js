@@ -54,34 +54,35 @@ lib.dialog('/', [
     // Destination
     function (session) {
         try {
-            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.select_voucher'), null, false, false);                                                    
-            session.send('redeem.select_voucher');
-            
             // Async fetch
             Store
                 .fetchVouchers()
                 .then(function (vouchers) {
                     vouchersData = vouchers;
                     let message;
-                    if (!utils.isCarouselSupported(session.message.source)) {
+                    if (utils.isCarouselSupported(session.message.source)) {
                         var voucherCard = new builder.HeroCard()
                             .title()
                             // .buttons(vouchers.map((voucher) => { return [builder.CardAction.imBack(session, voucher.voucherId, voucher.voucherId)]; }));
                             .buttons(vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); }));
-                    
+                        
                         message = new builder.Message(session).addAttachment(voucherCard);
 
                         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection - Simple', null, false, false);                        
+
+                        builder.Prompts.text(session, message);                        
                     } else {
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.select_voucher'), null, false, false);                                                    
+                        session.send('redeem.select_voucher');
+
                         message = new builder.Message()
                         .attachmentLayout(builder.AttachmentLayout.carousel)
                         .attachments(vouchers.map((voucher) => { return voucherAsAttachment(voucher, session); }));
     
                         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Redeem Vouchers Selection - Carousel', null, false, false);
-                    }
-                    
-                    builder.Prompts.text(session, message);
 
+                        builder.Prompts.text(session, message);
+                    }    
                     // Getting back to menu option:
                     // TODO: Replace "Back To Menu" and "Or get back to main menu" with 'redeem.back_to_menu_user_text' and 'redeem.back_to_menu_displayed'
                     var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
@@ -94,6 +95,7 @@ lib.dialog('/', [
                         
                     session.send(new builder.Message(session)
                         .addAttachment(card));
+                    
                 });
         }
         catch (err){
