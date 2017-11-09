@@ -13,5 +13,6 @@
     "thank_you": "Support will contact you shortly. Have a nice day :)",
     "checkCredit.loading": "Calculating your credit...",
     "error.couldNotFindUser" : "That is weird! We could not find your user details. Please leave the bot and try again.",
-    "error_occured_try_again" : "Ohh no.. error occured. Please try again"
+    "error_occured_try_again" : "Ohh no.. error occured. Please try again",
+    "unknown_user_command" : "Sorry! I could not understand you. Please use the following quick replies"
 }

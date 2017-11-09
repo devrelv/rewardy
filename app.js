@@ -4,14 +4,11 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 
-
-
-
 // Web app
 var app = express();
 var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -31,17 +28,6 @@ if (app.get('env') === 'development') {
   });
 }
 
-
-// Viber initialization
-var viber = require('botbuilder-viber');
-
-const viberOptions = {
-  Token: process.env.VIBER_TOKEN,
-  Name: process.env.BOT_NAME,
-  AvatarUrl: process.env.BOT_AVATAR
-};
-
-
 // Register your web app routes here
 app.get('/', function (req, res, next) {
   res.render('index', { title: 'Reward app' });
@@ -50,11 +36,25 @@ app.get('/', function (req, res, next) {
 // Register Bot
 var bot = require('./bot');
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Viber connector (not using bodyParser.json)
+var viber = require('botbuilder-viber');
+
+const viberOptions = {
+  Token: process.env.VIBER_TOKEN,
+  Name: process.env.BOT_NAME,
+  AvatarUrl: process.env.BOT_AVATAR
+};
 var viberChannel = new viber.ViberEnabledConnector(viberOptions);
-app.use('/viber/webhook', viberChannel.listen())
 bot.connect(viber.ViberChannelId, viberChannel);
+app.use('/viber/webhook', viberChannel.listen());
+
+// ----JSON enabled connectors from here on ----
+app.use(bodyParser.json()); // Only the next lines should be on json
 
 app.post('/api/messages', bot.listen());
+
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -65,6 +65,7 @@ app.use(function (req, res, next) {
 
 // Production error handler, no stacktraces leaked to user
 app.use(function (err, req, res, next) {
+  console.log('say what = ', err);
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

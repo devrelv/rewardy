@@ -18,7 +18,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "botbuilder": "^3.10.2",
-    "botbuilder-location": "^1.1.0",
+    "botbuilder-viber": "file:connectors/viber",
     "clone": "^2.1.1",
     "dotenv-extended": "^1.0.4",
     "express": "^4.15.5",
@@ -31,7 +31,6 @@
     "serialize-error": "^2.1.0",
     "serve-favicon": "^2.4.5",
     "uuid": "^3.1.0",
-    "winston": "^2.4.0",
-    "botbuilder-viber": "file:connectors/viber"
+    "winston": "^2.4.0"
   }
 }

@@ -36,10 +36,12 @@ var ViberEnabledConnector = (function() {
         });
 
         this.viberBot.on(BotEvents.MESSAGE_RECEIVED, (message, response) => {
+            console.log('MESSAGE_RECEIVED');
             self.processMessage(message, response);
         });
 
         this.viberBot.on(BotEvents.CONVERSATION_STARTED, (response, onFinish) => {
+            console.log('CONVERSATION_STARTED');
             // onFinish(new TextMessage(`Hi, ${userProfile.name}! Nice to meet you.`))
             var self = this;
             var userProfile = response.userProfile;

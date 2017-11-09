@@ -1,3 +1,4 @@
+var consts = require('./const');
 var crypto = require('crypto');
 var algo = 'aes-256-ctr';
 var password = 'itsasecret!';
@@ -24,7 +25,16 @@ function descrypt(cryptedInput) {
     return decryted;
 }
 
+function isCarouselSupported(platform) {
+    if (platform == consts.botFramework_Channels.kik) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 module.exports = {
+    isCarouselSupported: isCarouselSupported,
     serializeAddress: function (address) {
         return encrypt(serializeAddress(address));
     },
