@@ -79,7 +79,7 @@ var bot = new builder.UniversalBot(connector, [
                 // Help flow
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Help Flow', false, false);
                 return session.beginDialog('help:/');            
-            } else if (session.message.text.length > 0) {
+            } else if (session.message.text.length > 0 && !args.childId && args.childId != 'login:/') {
                 if (session.message.text == 'Get back to menu') {
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get Back To Menu', false, false);                    
                 } else {

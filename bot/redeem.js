@@ -93,7 +93,7 @@ lib.dialog('/', [
                             .title('Or')
                             .buttons(cardActions);
                     
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.back_to_menu_user_text') , null, false, false);            
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
                             
                         session.send(new builder.Message(session)
                             .addAttachment(card));
