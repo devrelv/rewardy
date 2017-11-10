@@ -53,8 +53,9 @@ lib.dialog('userDetails', [
         session.userData.sender.user_id = uuid.v1();
         session.userData.sender.language = session.userData.sender.language || consts.defaultUserLanguage;
         session.userData.sender.points = consts.defaultStartPoints;
+        session.userData.sender.platforms = [session.message.source];
         //saveSenderSettingFull(session, session.userData.sender); 
-        dal.saveUserToDatabase(session.userData.sender);
+        dal.saveNewUserToDatabase(session.userData.sender);
         // Getting more info from user if needed using builder.Prompt.text(session, 'xxxxx');
         session.endDialogWithResult({ updated: true });
     }
@@ -98,6 +99,10 @@ function editOptionDialog(validationFunc, invalidMessage, saveFunc) {
                     // Ask more questions about the user and save to DB + userData.sender
                     session.beginDialog('userDetails');
                 } else {
+                    if (userDataFromDB.platforms.indexOf(session.message.source) == -1) {
+                        userDataFromDB.platforms.push(session.message.source);
+                        dal.updateUserPlatforms(userDataFromDB.user_id, userDataFromDB.platforms);
+                    }
                     session.userData.sender = userDataFromDB;
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('welcome_back', session.userData.sender.name) , null, false, false);                                                                                        
             

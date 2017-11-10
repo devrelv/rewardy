@@ -58,7 +58,13 @@ var bot = new builder.UniversalBot(connector, [
     },
     function (session, args, next) {
         try {
-            if (localizedRegex(session, [MainOptions.Redeem]).test(session.message.text)) {
+            if (session.message.text == 'clear my data bitch') {
+                session.userData = {}; 
+                session.privateConversationData = {};
+                session.conversationData = {};
+                session.say('DONE');
+                return session.replaceDialog('/');
+            } else if (localizedRegex(session, [MainOptions.Redeem]).test(session.message.text)) {
                 // chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Redeem Flow', false, false);
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Redeem Flow', false, false);
                 // Redeem flow
@@ -85,8 +91,7 @@ var bot = new builder.UniversalBot(connector, [
                 } else {
                      // User typed something that we can't understand
                      session.say('unknown_user_command');
-                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, null, true, false);
-                    
+                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, null, true, false);   
                 }
             }
     

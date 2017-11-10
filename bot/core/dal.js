@@ -86,6 +86,10 @@ let BotUserSchema = new Schema({
             type: Schema.Types.Mixed,
             required: false
         }
+    },
+    platforms: {
+        type: Array,
+        default: []
     }
 });
 
@@ -136,18 +140,19 @@ let ReferralUser = mongoose.model('ReferralUserSchema', ReferralUserSchema);
 //     return;
 // }
 
-function saveUserToDatabase(userDetails, language) {
+function saveNewUserToDatabase(userDetails, language) {
     let newBotUser = new BotUser({
-        user_id: userDetails.userId,
+        user_id: userDetails.user_id,
         email: userDetails.email,
         name: userDetails.name,
-        points: consts.defaultStartPoints,
-        language: userDetails.language || consts.defaultUserLanguage
+        points: userDetails.points,
+        language: userDetails.language || consts.defaultUserLanguage,
+        platforms: userDetails.platforms
     });
 
     newBotUser.save(function(err) {
         if (err) {
-            logger.log.error('dal: saveUserToDatabase newBotUser.save error occured', {error: serializeError(err), newBotUser: newBotUser});
+            logger.log.error('dal: saveNewUserToDatabase newBotUser.save error occured', {error: serializeError(err), newBotUser: newBotUser});
         }
     });
 }
@@ -161,6 +166,24 @@ function saveDeviceUserToDatabase(userId, deviceType) {
     newDeviceUser.save(function(err) {
         if (err) {
             logger.log.error('dal: saveDeviceUserToDatabase newDeviceUser.save error occured', {error: serializeError(err), newDeviceUser: newDeviceUser, userId: userId, deviceType: deviceType});
+        }
+    });
+}
+
+function updateUserPlatforms(userId, platforms) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({user_id: userId}, {$set: {platforms: platforms}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, points: currentPoints});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, points: currentPoints});
+            reject(err);
         }
     });
 }
@@ -242,11 +265,12 @@ function getInvitedFriendsByUserId(userId) {
 }
 
 module.exports = {
-    saveUserToDatabase: saveUserToDatabase,
+    saveNewUserToDatabase: saveNewUserToDatabase,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
     getBotUserById: getBotUserById,
     getDeviceByUserId: getDeviceByUserId,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
     getBotUserByEmail: getBotUserByEmail,
     getInvitedFriendsByUserId: getInvitedFriendsByUserId,
+    updateUserPlatforms: updateUserPlatforms
 };
