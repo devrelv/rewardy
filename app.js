@@ -28,8 +28,17 @@ if (app.get('env') === 'development') {
   });
 }
 
+// Register your web app routes here
+app.get('/', function (req, res, next) {
+  res.render('index', { title: 'Reward app' });
+});
 
-// Viber initialization
+// Register Bot
+var bot = require('./bot');
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Viber connector (not using bodyParser.json)
 var viber = require('botbuilder-viber');
 
 const viberOptions = {
@@ -37,31 +46,13 @@ const viberOptions = {
   Name: process.env.BOT_NAME,
   AvatarUrl: process.env.BOT_AVATAR
 };
-
-
-// Register your web app routes here
-app.get('/', function (req, res, next) {
-  res.render('index', { title: 'Reward app' });
-});
-
-/*
-app.post('/viber/webhook', function (req, res) {
-  console.log(req);
-  res.writeHead(200);
-  res.end();
-});*/
-
-// Register Bot
-var bot = require('./bot');
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
 var viberChannel = new viber.ViberEnabledConnector(viberOptions);
 bot.connect(viber.ViberChannelId, viberChannel);
-
 app.use('/viber/webhook', viberChannel.listen());
 
+// ----JSON enabled connectors from here on ----
 app.use(bodyParser.json()); // Only the next lines should be on json
+
 app.post('/api/messages', bot.listen());
 
 
