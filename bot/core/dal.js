@@ -45,13 +45,11 @@ let BotUserSchema = new Schema({
         unique: true
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+        type: String // email is not unique because we allow the same email to be in different platforms
     },
     name: {
         type: String,
-        required: true
+        required: false
     },
     language: {
         type: String,
@@ -175,14 +173,32 @@ function updateUserPlatforms(userId, platforms) {
         try {
             BotUser.update({user_id: userId}, {$set: {platforms: platforms}}, (err, res) => {
                 if (err) {
-                    logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, points: currentPoints});                        
+                    logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, platforms: platforms});                        
                     reject(err);
                 } else {
                     resolve();
                 }
             });
         } catch (err) {
-            logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, points: currentPoints});
+            logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, platforms: platforms});
+            reject(err);
+        }
+    });
+}
+
+function updateUserDetails(userId, email, name) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({user_id: userId}, {$set: {email: email, name: name}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateUserDetails.update error', {error: serializeError(err), user_id: userId, email: email, name: name});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateUserDetails.update error', {error: serializeError(err), user_id: userId, email: email, name: name});
             reject(err);
         }
     });
@@ -272,5 +288,6 @@ module.exports = {
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
     getBotUserByEmail: getBotUserByEmail,
     getInvitedFriendsByUserId: getInvitedFriendsByUserId,
-    updateUserPlatforms: updateUserPlatforms
+    updateUserPlatforms: updateUserPlatforms,
+    updateUserDetails: updateUserDetails
 };

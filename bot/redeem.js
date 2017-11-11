@@ -137,6 +137,10 @@ lib.dialog('/', [
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points), null, false, false);                                                                   
                     session.say(session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points));
                     back_to_menu.sendBackToMainMenu(session, builder);
+                } else if (!session.userData.sender.email || session.userData.sender.email.indexOf('@') < 0) {
+                    // No email entered
+                    session.say(session.gettext('redeem.no_details_filled'));
+                    back_to_menu.sendBackToMainMenu(session, builder);
                 } else {
                     // Continue with the redeem process - send validation email
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.explanation'), null, false, false);                                                                                   

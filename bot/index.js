@@ -6,6 +6,7 @@ var mailSender = require('./core/mail-sender.js');
 const logger = require('./core/logger');
 const serializeError = require('serialize-error');
 const chatbase = require('./core/chatbase');
+var uuid = require('uuid');
 
 logger.log.info('Bot started');
 
@@ -24,18 +25,26 @@ var MainOptions = {
     Redeem: 'keyboard.root.redeem',
     InviteFriends: 'keyboard.root.inviteFriends',
     GetCredit: 'keyboard.root.getCredit',
+    FillEmail: 'keyboard.root.fillEmail',
     Help: 'keyboard.root.help'
 };
 function createRootButtons(session, builder) {
-    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Main Menu Options', null, false, false);
-
-    return [
+    var buttons = [
         builder.CardAction.imBack(session, session.gettext(MainOptions.CheckCredit), MainOptions.CheckCredit),
         builder.CardAction.imBack(session, session.gettext(MainOptions.GetCredit), MainOptions.GetCredit),
         builder.CardAction.imBack(session, session.gettext(MainOptions.InviteFriends), MainOptions.InviteFriends),
         builder.CardAction.imBack(session, session.gettext(MainOptions.Redeem), MainOptions.Redeem),
-        builder.CardAction.imBack(session, session.gettext(MainOptions.Help), MainOptions.Help)
-    ];
+        builder.CardAction.imBack(session, session.gettext(MainOptions.Help), MainOptions.Help)];
+    if (!isUserHasEmail(session)) {
+        buttons.push(builder.CardAction.imBack(session, session.gettext(MainOptions.FillEmail), MainOptions.FillEmail));
+    }
+
+    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Main Menu Options', null, false, false);    
+    return buttons;
+}
+
+function isUserHasEmail(session) {
+    return session.userData.sender && session.userData.sender.email.indexOf('@')>-1;
 }
 
 function sendRootMenu(session, builder) {
@@ -49,16 +58,30 @@ function sendRootMenu(session, builder) {
 
 var bot = new builder.UniversalBot(connector, [
     function (session, args, next) {
-        // We already have email. Just skip to the root menu
-        if (session.userData.sender && session.userData.sender.email) {
-            return next();
+        // User just logged in
+        if (!session.userData.sender) {
+            session.userData.sender = {};
+            session.userData.sender.name = '';
+            session.userData.sender.user_id = uuid.v1();
+            session.userData.sender.language = session.userData.sender.language || consts.defaultUserLanguage;
+            session.userData.sender.points = consts.defaultStartPoints;
+            session.userData.sender.platforms = [session.message.source];
+            session.userData.sender.email = session.userData.sender.user_id;
+
+            dal.saveNewUserToDatabase(session.userData.sender);
+            session.send(session.gettext('welcome_new_user_message'));
+
+            if (session.message.text.length > 0) {
+                session.message.text = "";
+            }
+            
         }
 
-        return session.beginDialog('login:/');
+        return next();
     },
     function (session, args, next) {
         try {
-            if (session.message.text == 'clear my data bitch') {
+            if (session.message.text == 'clear my data bitch') { // TODO: Bug - the clear data creates a LOOP
                 session.userData = {}; 
                 session.privateConversationData = {};
                 session.conversationData = {};
@@ -84,9 +107,13 @@ var bot = new builder.UniversalBot(connector, [
             } else if (localizedRegex(session, [MainOptions.Help]).test(session.message.text)) {
                 // Help flow
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Help Flow', false, false);
-                return session.beginDialog('help:/');            
-            } else if (session.message.text.length > 0 && !args.childId && args.childId != 'login:/') {
-                if (session.message.text == 'Get back to menu') {
+                return session.beginDialog('help:/');
+            } else if (localizedRegex(session, [MainOptions.FillEmail]).test(session.message.text)) {
+                // Fill User Details
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Fill Details Flow', false, false);
+                return session.beginDialog('fill-details:/');
+            } else if (session.message.text.length > 0 && !args.childId && args.childId != 'fill-details:/') {
+                if (['Get back to menu'].indexOf(session.message.text) > -1) {
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get Back To Menu', false, false);                    
                 } else {
                      // User typed something that we can't understand
@@ -124,7 +151,7 @@ bot.set('localizerSettings', {
 
 // Sub-Dialogs
 bot.library(require('./help').createLibrary());
-bot.library(require('./login').createLibrary());
+bot.library(require('./fill-details').createLibrary());
 bot.library(require('./redeem').createLibrary());
 bot.library(require('./check-credits').createLibrary());
 bot.library(require('./get-free-credits').createLibrary());

@@ -80,7 +80,6 @@ lib.dialog('help_get_user_message', [
         }
     }]);
 
-// TODO: use locale for the messages
 lib.dialog('help_validate_email', [
     function (session, args) {
         if (!args || !args.response) {

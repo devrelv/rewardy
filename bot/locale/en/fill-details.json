@@ -1,0 +1,11 @@
+{
+    "type_email_or_return": "Please type your email address or 'cancel' to go back",
+    "invalid_email_address": "⚠ Something is wrong with that email address.",
+    "fill-details.get_name": "What is your name?",
+    "fill-details.user_requested_to_go_back": "As you wish... getting back to main menu",
+    "welcome_back": "Welcome back %s, I'm happy to see you again",
+    "confirm_mail_for_new_user": "This email address (%s) is new for me.\n\rAre you a new user? 👶🏼",
+    "fill-details.confirm_email_address": "Please confirm your email address - %s\n\rIs this your email address?",
+    "fill-details.explanation": "In order to send the vouchers to your mail, I need your email address\n\rI promise not to spam you! 👼🏽",
+    "fill-details.success": "Wowee! your details have been updated"
+}
