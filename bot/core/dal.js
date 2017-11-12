@@ -280,6 +280,25 @@ function getInvitedFriendsByUserId(userId) {
     });
 }
 
+function getPointsToUser(userId) {
+    return new Promise((resolve, reject) => {
+        BotUser.findOne({
+            'user_id': userId
+        }, function(err, data) {
+            if (err) {
+                logger.log.error('dal: getPointsToUser BotUser.find error occured', {error: serializeError(err),  userId: userId});
+                reject(err);
+            } else {
+                if (data) {
+                    resolve(data.points);                    
+                } else {
+                    resolve(consts.defaultStartPoints);
+                }
+            } 
+        });
+    });
+}
+
 module.exports = {
     saveNewUserToDatabase: saveNewUserToDatabase,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
@@ -289,5 +308,6 @@ module.exports = {
     getBotUserByEmail: getBotUserByEmail,
     getInvitedFriendsByUserId: getInvitedFriendsByUserId,
     updateUserPlatforms: updateUserPlatforms,
-    updateUserDetails: updateUserDetails
+    updateUserDetails: updateUserDetails,
+    getPointsToUser: getPointsToUser
 };

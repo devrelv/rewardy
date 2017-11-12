@@ -11,6 +11,7 @@ var consts = require('./core/const');
 var hash = require('object-hash');
 const chatbase = require('./core/chatbase');
 const utils = require('./core/utils');
+const dal = require('./core/dal');
 
 // Helpers
 function voucherAsAttachment(voucher, session) {
@@ -131,39 +132,52 @@ lib.dialog('/', [
                 }
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Voucher Redeem Request', false, false);
                 
-                
-                if (session.userData.sender.points < selectedVoucher.points) {
-                    // Not enough points
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points), null, false, false);                                                                   
-                    session.say(session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points));
-                    back_to_menu.sendBackToMainMenu(session, builder);
-                } else if (!session.userData.sender.email || session.userData.sender.email.indexOf('@') < 0) {
-                    // No email entered
-                    session.say(session.gettext('redeem.no_details_filled'));
-                    back_to_menu.sendBackToMainMenu(session, builder);
-                } else {
-                    // Continue with the redeem process - send validation email
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.explanation'), null, false, false);                                                                                   
-                    session.say('redeem.explanation');
-                    mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, session.userData.sender.email, 
-                            [{key: '%VOUCHER_ID%', value: selectedVoucher.voucherId},
-                            {key: '%VOUCHER__EMAIL_TITLE%', value: selectedVoucher.emailTitle},
-                            {key: '%VOUCHER_CTA%', value: selectedVoucher.cta},
-                            {key: '%VOUCHER_IMAGE_URL%', value: selectedVoucher.imageUrl},
-                            {key: '%REDEEM_CONFIRMATION_URL%', value: get_redeem_confirmation_url(selectedVoucher, session.userData.sender.user_id, session.userData.sender.email)},
-                        ]).then(() => {
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_sent', session.userData.sender.email), null, false, false);                                                                                   
-                        session.say(session.gettext('redeem.email_sent', session.userData.sender.email));
+                dal.getPointsToUser(session.userData.sender.user_id).then(points => {
+                    session.userData.sender.points = points;
+
+                    if (!session.userData.sender.points) {
+                        session.userData.sender.points = consts.defaultStartPoints;
+                    }
+                    
+                    if (session.userData.sender.points < selectedVoucher.points) {
+                        // Not enough points
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points), null, false, false);                                                                   
+                        session.say(session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points));
                         back_to_menu.sendBackToMainMenu(session, builder);
-                        
-                    }).catch(err => {
-                        logger.log.error('redeem: / dialog 2nd function on mailSender.sendTemplateMail error', {error: serializeError(err)});
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_error'), null, false, false);                                                                                                       
-                        session.say('redeem.email_error');
+                    } else if (!session.userData.sender.email || session.userData.sender.email.indexOf('@') < 0) {
+                        // No email entered
+                        session.say(session.gettext('redeem.no_details_filled'));
                         back_to_menu.sendBackToMainMenu(session, builder);
-                        
-                    });
-                }
+                    } else {
+                        // Continue with the redeem process - send validation email
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.explanation'), null, false, false);                                                                                   
+                        session.say('redeem.explanation');
+                        mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, session.userData.sender.email, 
+                                [{key: '%VOUCHER_ID%', value: selectedVoucher.voucherId},
+                                {key: '%VOUCHER__EMAIL_TITLE%', value: selectedVoucher.emailTitle},
+                                {key: '%VOUCHER_CTA%', value: selectedVoucher.cta},
+                                {key: '%VOUCHER_IMAGE_URL%', value: selectedVoucher.imageUrl},
+                                {key: '%REDEEM_CONFIRMATION_URL%', value: get_redeem_confirmation_url(selectedVoucher, session.userData.sender.user_id, session.userData.sender.email)},
+                            ]).then(() => {
+                            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_sent', session.userData.sender.email), null, false, false);                                                                                   
+                            session.say(session.gettext('redeem.email_sent', session.userData.sender.email));
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                            
+                        }).catch(err => {
+                            logger.log.error('redeem: / dialog 2nd function on mailSender.sendTemplateMail error', {error: serializeError(err)});
+                            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_error'), null, false, false);                                                                                                       
+                            session.say('redeem.email_error');
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                            
+                        });
+                    }
+                }).catch (err => {
+                    session.say('redeem.general_error');
+                    logger.log.error('redeem: error occured dal.getPointsToUser', {error: serializeError(err)});
+                    session.endDialog();
+                    session.replaceDialog('/');
+                    
+                });
             }
         }
         catch (err) {
