@@ -50,7 +50,7 @@ lib.dialog('/', [
                 back_to_menu.sendBackToMainMenu(session, builder);
             });
         } catch (err) {
-            logger.log.error('get-free-credits: error occured', {error: serializeError(err)});
+            logger.log.error('get-free-credits: error occurred', {error: serializeError(err)});
             throw err;
         }
     }

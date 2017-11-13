@@ -27,7 +27,7 @@ try {
     mailTemplates.push(redeem_confirm);
 }
 catch (err) {
-    logger.log.error('mail-templates: noScope error occured', {error: serializeError(err)});
+    logger.log.error('mail-templates: noScope error occurred', {error: serializeError(err)});
     throw err;
 }
 
@@ -44,7 +44,7 @@ function getTemplate(templateId, data) {
             }
         }
     } catch (err) {
-        logger.log.error('mail-templates: noScope error occured', {error: serializeError(err), arguments: {templateId: templateId, data: data}});    
+        logger.log.error('mail-templates: noScope error occurred', {error: serializeError(err), arguments: {templateId: templateId, data: data}});    
         throw err;
     }
 }

@@ -29,7 +29,7 @@ function voucherAsAttachment(voucher, session) {
         ]);
     }
     catch (err) {
-        logger.log.error('redeem: voucherAsAttachment error occured', {error: serializeError(err), voucher: voucher});        
+        logger.log.error('redeem: voucherAsAttachment error occurred', {error: serializeError(err), voucher: voucher});        
         throw err;
     }
 }
@@ -39,7 +39,7 @@ function voucherAsClassic(voucher, session, builder) {
             return builder.CardAction.imBack(session, voucher.title, voucher.title);
     }
     catch (err) {
-        logger.log.error('redeem: voucherAsClassic error occured', {error: serializeError(err), voucher: voucher});        
+        logger.log.error('redeem: voucherAsClassic error occurred', {error: serializeError(err), voucher: voucher});        
         throw err;
     }
 }
@@ -103,7 +103,7 @@ lib.dialog('/', [
         }
         catch (err){
             session.say('redeem.general_error');
-            logger.log.error('redeem: / dialog 1st function error occured', {error: serializeError(err)});        
+            logger.log.error('redeem: / dialog 1st function error occurred', {error: serializeError(err)});        
             session.endDialog();
             session.replaceDialog('/');
         }
@@ -173,7 +173,7 @@ lib.dialog('/', [
                     }
                 }).catch (err => {
                     session.say('redeem.general_error');
-                    logger.log.error('redeem: error occured dal.getPointsToUser', {error: serializeError(err)});
+                    logger.log.error('redeem: error occurred dal.getPointsToUser', {error: serializeError(err)});
                     session.endDialog();
                     session.replaceDialog('/');
                     
@@ -184,7 +184,7 @@ lib.dialog('/', [
             chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, null, true, false);            
             chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.general_error'), null, false, false);                                                                                                                   
             session.say('redeem.general_error');
-            logger.log.error('redeem: / dialog 2nd function error occured', {error: serializeError(err)});        
+            logger.log.error('redeem: / dialog 2nd function error occurred', {error: serializeError(err)});        
             session.endDialog();
             session.replaceDialog('/');
         }

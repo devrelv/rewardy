@@ -52,7 +52,7 @@ function sendCustomMail(toEmail, subject, text, html) {
             }
         }
         catch (err) {
-            logger.log.error('mail-sender: sendCustomMail error occured', {error: serializeError(err), arguments: {toEmail: toEmail, subject: subject, text: text, html: html}});
+            logger.log.error('mail-sender: sendCustomMail error occurred', {error: serializeError(err), arguments: {toEmail: toEmail, subject: subject, text: text, html: html}});
             throw err;
         }
         

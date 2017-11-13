@@ -26,11 +26,11 @@ lib.dialog('/', [
                 
                 back_to_menu.sendBackToMainMenu(session, builder);
             }).catch(err => {
-                logger.log.error('check-credits: error occured dal.getPointsToUser', {error: serializeError(err)});
+                logger.log.error('check-credits: error occurred dal.getPointsToUser', {error: serializeError(err)});
             
             });
         } catch (err) {
-            logger.log.error('check-credits: error occured', {error: serializeError(err)});
+            logger.log.error('check-credits: error occurred', {error: serializeError(err)});
             throw err;
         }
         
