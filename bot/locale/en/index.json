@@ -1,6 +1,7 @@
 {
     "welcome_title": "Hello and welcome to Rewardy.co! ",
     "welcome_subtitle": "Hi %s, you can use Rewardy Points to claim gift cards for your favorite online services.",
+    "keyboard.root.title": "Hey! please select on of the following options 👇",
     "keyboard.root.checkCredit": "Check credit 🔍",
     "keyboard.root.redeem": "Redeem 🛍",
     "keyboard.root.inviteFriends": "Invite friends for free credit 😎",
