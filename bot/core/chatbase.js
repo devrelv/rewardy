@@ -88,10 +88,17 @@ function sendMultipleMessages(arrayOfMessage) {
     
 }
 
+function linkTrackingWrapUrl(url, platform) {
+    platform = platform || 'unknown';
+    return 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + url + '&platform=' + platform;
+
+}
+
 module.exports = {
     CHATBASE_TYPE_FROM_USER: CHATBASE_TYPE_FROM_USER,
     CHATBASE_TYPE_FROM_BOT: CHATBASE_TYPE_FROM_BOT,
     sendSingleMessage: sendSingleMessage,
     sendMultipleMessages: sendMultipleMessages,
+    linkTrackingWrapUrl: linkTrackingWrapUrl
     
 }
