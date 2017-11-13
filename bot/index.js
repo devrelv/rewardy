@@ -131,7 +131,7 @@ var bot = new builder.UniversalBot(connector, [
                 .addAttachment(welcomeCard));
         }
         catch (err) {
-            logger.log.error('index: builder.UniversalBot error occured', {error: serializeError(err)});
+            logger.log.error('index: builder.UniversalBot error occurred', {error: serializeError(err)});
             throw err;            
         }
     }
@@ -216,7 +216,7 @@ function localizedRegex(session, localeKeys) {
         return regex;
     } 
     catch (err) {
-        logger.log.error('index: localizedRegex error occured', {error: serializeError(err)});
+        logger.log.error('index: localizedRegex error occurred', {error: serializeError(err)});
         throw err;        
     }
     
