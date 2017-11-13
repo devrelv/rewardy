@@ -88,6 +88,9 @@ let BotUserSchema = new Schema({
     platforms: {
         type: Array,
         default: []
+    },
+    proactive_address: {
+        type: Schema.Types.Mixed
     }
 });
 
@@ -145,7 +148,8 @@ function saveNewUserToDatabase(userDetails, language) {
         name: userDetails.name,
         points: userDetails.points,
         language: userDetails.language || consts.defaultUserLanguage,
-        platforms: userDetails.platforms
+        platforms: userDetails.platforms,
+        proactive_address: userDetails.proactive_address
     });
 
     newBotUser.save(function(err) {

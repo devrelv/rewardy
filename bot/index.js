@@ -67,6 +67,7 @@ var bot = new builder.UniversalBot(connector, [
             session.userData.sender.points = consts.defaultStartPoints;
             session.userData.sender.platforms = [session.message.source];
             session.userData.sender.email = session.userData.sender.user_id;
+            session.userData.sender.proactive_address = session.message.address;
 
             dal.saveNewUserToDatabase(session.userData.sender);
             session.send(session.gettext('welcome_new_user_message'));
