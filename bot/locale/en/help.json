@@ -7,5 +7,5 @@
     "help.message_received": "Thank you\n\ryour message has been received",
     "help.cancelling" : "Your message was not sent",
     "help.confirm_sending": "Do you want to send this message to support?\n\rPlease reply 'yes' or 'no'",
-    "help.error_sending_email": "Error occured while trying to send the message to the support\n\rPlease try again."
+    "help.error_sending_email": "Error occurred while trying to send the message to the support\n\rPlease try again."
 }

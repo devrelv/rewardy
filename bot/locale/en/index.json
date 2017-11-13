@@ -17,5 +17,5 @@
     "error.couldNotFindUser" : "That is weird! I could not find your user details. Please leave the bot and try again.",
     "error_occured_try_again": "Ohh no.. error occurred. Please try again",
     "unknown_user_command" : "Sorry! I could not understand you. Please use the following quick replies",
-    "welcome_new_user_message": "Hello and welcome to Rewardy.co!\n\rYou can earn points by trying taks (such as discover awesome apps, answer a survey) and redeem points for gify cards\n\rLet's get started! 👻👻👻"
+    "welcome_new_user_message": "Hello and welcome to Rewardy.co!\n\rYou can earn points by trying tasks (such as discover awesome apps, answer a survey) and redeem points for gift cards\n\rLet's get started! 👻👻👻"
 }
