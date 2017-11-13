@@ -22,8 +22,8 @@ module.exports = {
     SPONSOR_PAY_APP_ID_APPLE : '104295',
     SPONSOR_PAY_APP_ID_ANDROID : '104296',
 
-    defaultStartPoints: 100,
-    referralBonusPoints: 50,
+    defaultStartPoints: 10,
+    referralBonusPoints: 20,
     minimumCompletedOffersForReferalToCount: 1,
     
 
