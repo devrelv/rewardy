@@ -123,8 +123,7 @@ var bot = new builder.UniversalBot(connector, [
             }
     
             var welcomeCard = new builder.HeroCard(session)
-                .title('welcome_title')
-                .subtitle(session.gettext('welcome_subtitle', session.userData.sender.name))
+                .title('keyboard.root.title')
                 .buttons(createRootButtons(session, builder));
     
             session.send(new builder.Message(session)
