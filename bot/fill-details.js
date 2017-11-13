@@ -27,7 +27,7 @@ lib.dialog('email', [
         if (args.response && (['cancel', 'no', 'quit', 'back'].indexOf(args.response.toLowerCase().trim()) > -1)) {
             // User asked to quit
             session.send(session.gettext('fill-details.user_requested_to_go_back'));
-            session.conversationData = false;
+            session.conversationData.backState = true;
             session.endDialog();
             session.replaceDialog('/');
         } else {
@@ -87,7 +87,7 @@ lib.dialog('userDetails', [
 
         dal.updateUserDetails(session.userData.sender.user_id, session.userData.sender.email, session.userData.sender.name)
         session.send(session.gettext('fill-details.success'));
-        session.conversationData = false;
+        session.conversationData.backState = true;
         session.endDialog();
         session.replaceDialog('/');
     }

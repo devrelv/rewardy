@@ -12,7 +12,5 @@
     "redeem.email_sent" : "The confirmation email has been sent to %s\n\rPlease check your inbox and confirm this voucher redeem",
     "redeem.email_error" : "⚠ Something went wrong with that email\n\rIf this problem persists again please contact support at hello@rewardy.co",
     "redeem.general_error" : "⚠ Getting back to main menu\n\rIf you think it's an error please contact support at hello@rewardy.co",
-    "redeem.back_to_menu_user_text" : "Get back to menu",
-    "redeem.back_to_menu_displayed" : "Get back to menu",
     "redeem.no_details_filled" : "You need to fill your details before redeeming\n\rPlease choose \"Fill Details\" in the main menu"
 }

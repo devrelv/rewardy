@@ -50,11 +50,13 @@ function getVoucherText(voucher) {
 }
 
 let vouchersData;
+let backToMenuText;
 
 lib.dialog('/', [
     // Destination
     function (session) {
         try {
+            backToMenuText = session.localizer.trygettext(session.preferredLocale(), 'backToMenu.multiple_choices_text', 'back-to-menu');
             // Async fetch
             Store
                 .fetchVouchers()
@@ -63,7 +65,7 @@ lib.dialog('/', [
                     let message;
                     if (!utils.isCarouselSupported(session.message.source)) {
                         var simpleChoicesButtons = vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); });
-                        simpleChoicesButtons.push(builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text')));
+                        simpleChoicesButtons.push(builder.CardAction.imBack(session, backToMenuText, backToMenuText));
 
                         var voucherCard = new builder.HeroCard()
                             .title(session.gettext('redeem.select_voucher'))
@@ -87,14 +89,14 @@ lib.dialog('/', [
                         builder.Prompts.text(session, message);
 
                         // Getting back to menu option:
-                        // TODO: replace "Get back to menu" with "session.gettext('redeem.back_to_menu_user_text')" - For some reason the locale is not  working here
-                        var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
+                        let backToMenuTitle = session.localizer.trygettext(session.preferredLocale(), 'backToMenu.multiple_choices_title', 'back-to-menu');
+                        var cardActions = [builder.CardAction.imBack(session, backToMenuText, backToMenuText)];
                         
                         var card = new builder.HeroCard()
-                            .title('Or') // TODO: Fix this as well
+                            .title(backToMenuTitle) // TODO: Fix this as well
                             .buttons(cardActions);
                     
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, backToMenuText , null, false, false);            
                             
                         session.send(new builder.Message(session)
                             .addAttachment(card));
@@ -110,9 +112,10 @@ lib.dialog('/', [
     }, function (session, args) {
         try {
             
-            if (args.response == session.gettext('redeem.back_to_menu_user_text')) {
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, session.gettext('redeem.back_to_menu_user_text'), false, false);
+            if (args.response == backToMenuText) {
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, backToMenuText, false, false);
                 
+                session.conversationData.backState = true;
                 session.endDialog();
                 session.replaceDialog('/');
             }
@@ -174,6 +177,7 @@ lib.dialog('/', [
                 }).catch (err => {
                     session.say('redeem.general_error');
                     logger.log.error('redeem: error occurred dal.getPointsToUser', {error: serializeError(err)});
+                    session.conversationData.backState = true;
                     session.endDialog();
                     session.replaceDialog('/');
                     
@@ -185,6 +189,7 @@ lib.dialog('/', [
             chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.general_error'), null, false, false);                                                                                                                   
             session.say('redeem.general_error');
             logger.log.error('redeem: / dialog 2nd function error occurred', {error: serializeError(err)});        
+            session.conversationData.backState = true;
             session.endDialog();
             session.replaceDialog('/');
         }
