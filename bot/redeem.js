@@ -91,7 +91,7 @@ lib.dialog('/', [
                         var cardActions = [builder.CardAction.imBack(session, 'Get back to menu', 'Get back to menu')];
                         
                         var card = new builder.HeroCard()
-                            .title('Or')
+                            .title('Or') // TODO: Fix this as well
                             .buttons(cardActions);
                     
                         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'Get back to menu' , null, false, false);            

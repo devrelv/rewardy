@@ -114,7 +114,8 @@ var bot = new builder.UniversalBot(connector, [
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Goto Fill Details Flow', false, false);
                 return session.beginDialog('fill-details:/');
             } else if (session.message.text.length > 0 && !args.childId && args.childId != 'fill-details:/') {
-                if (['Get back to menu'].indexOf(session.message.text) > -1) {
+                if (session.conversationData.backState) {
+                    session.conversationData = false;
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Get Back To Menu', false, false);                    
                 } else {
                      // User typed something that we can't understand
@@ -124,8 +125,7 @@ var bot = new builder.UniversalBot(connector, [
             }
     
             var welcomeCard = new builder.HeroCard(session)
-                .title('welcome_title')
-                .subtitle(session.gettext('welcome_subtitle', session.userData.sender.name))
+                .title('keyboard.root.title')
                 .buttons(createRootButtons(session, builder));
     
             session.send(new builder.Message(session)
