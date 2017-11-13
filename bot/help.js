@@ -26,7 +26,7 @@ lib.dialog('/', [
                 }
             } else {
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.no_help_needed'), null, false, false);                                                                                                                                                   
-                session.message.text = 'Get back to menu';
+                session.conversationData = false;
                 session.endDialog(session.gettext('help.no_help_needed'));
                 session.replaceDialog('/');
             }
@@ -62,7 +62,7 @@ lib.dialog('help_get_user_message', [
                         {key: '%USER_MESSAGE%', value: session.privateConversationData.userQuestion},
                         {key: '%USER_DETAILS%', value: JSON.stringify(serializeError(details))}]).then (data =>
                 {
-                    session.message.text = 'Get back to menu';                
+                    session.conversationData = false;
                     session.endDialog(session.gettext('help.message_received'));
                     session.replaceDialog('/');
                 }).catch (err => {
@@ -74,7 +74,7 @@ lib.dialog('help_get_user_message', [
                 });
             } else {
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.cancelling'), null, false, false);
-                session.message.text = 'Get back to menu';                
+                session.conversationData = false;
                 session.endDialog(session.gettext('help.cancelling'))
                 session.replaceDialog('/');
             }
