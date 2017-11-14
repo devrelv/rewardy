@@ -1,7 +1,7 @@
 [
 	{
 		"id": "$10 on Amazon",
-		"title": "$10 Amazon Gift Card for 1,000 points",
+		"title": "$10 Amazon Gift Card for 1,700 points",
 		"emailTitle": "$10 Gift Card on Amazon",
 		"store": "Amazon",
 		"description": "Online Shopping for Electronics, Apparel, Books & more",
@@ -11,7 +11,7 @@
 	},
 	{
 		"id": "$10 on Xbox",
-		"title": "$10 Xbox Gift Card for 1,000 points",
+		"title": "$10 Xbox Gift Card for 1,700 points",
 		"emailTitle": "$10 Gift Card on Xbox",
 		"store": "Xbox",
 		"description": "Games and entertainment on Xbox or Windows",
@@ -21,7 +21,7 @@
 	},
 	{
 		"id": "$10 on iTunes",
-		"title": "$10 iTunes Gift Card for 1,000 points",
+		"title": "$10 iTunes Gift Card for 1,700 points",
 		"emailTitle": "$10 Gift Card on iTunes",
 		"store": "iTunes",
 		"description": "App Store, iTunes Store and even iBooks Store",
@@ -31,7 +31,7 @@
 	},
 	{
 		"id": "$10 on Google",
-		"title": "$10 Google Gift Card for 1,000 points",
+		"title": "$10 Google Gift Card for 1,700 points",
 		"emailTitle": "$10 Gift Card on Google",
 		"store": "Google",
 		"description": "Music, movies, TV shows, books, and Android apps and games",
