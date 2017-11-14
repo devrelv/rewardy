@@ -11,6 +11,7 @@ var consts = require('./core/const');
 var hash = require('object-hash');
 const chatbase = require('./core/chatbase');
 const utils = require('./core/utils');
+const dal = require('./core/dal');
 
 // Helpers
 function voucherAsAttachment(voucher, session) {
@@ -28,7 +29,7 @@ function voucherAsAttachment(voucher, session) {
         ]);
     }
     catch (err) {
-        logger.log.error('redeem: voucherAsAttachment error occured', {error: serializeError(err), voucher: voucher});        
+        logger.log.error('redeem: voucherAsAttachment error occurred', {error: serializeError(err), voucher: voucher});        
         throw err;
     }
 }
@@ -38,7 +39,7 @@ function voucherAsClassic(voucher, session, builder) {
             return builder.CardAction.imBack(session, voucher.title, voucher.title);
     }
     catch (err) {
-        logger.log.error('redeem: voucherAsClassic error occured', {error: serializeError(err), voucher: voucher});        
+        logger.log.error('redeem: voucherAsClassic error occurred', {error: serializeError(err), voucher: voucher});        
         throw err;
     }
 }
@@ -49,11 +50,13 @@ function getVoucherText(voucher) {
 }
 
 let vouchersData;
+let backToMenuText;
 
 lib.dialog('/', [
     // Destination
     function (session) {
         try {
+            backToMenuText = session.localizer.trygettext(session.preferredLocale(), 'backToMenu.multiple_choices_text', 'back-to-menu');
             // Async fetch
             Store
                 .fetchVouchers()
@@ -62,7 +65,7 @@ lib.dialog('/', [
                     let message;
                     if (!utils.isCarouselSupported(session.message.source)) {
                         var simpleChoicesButtons = vouchers.map((voucher) => { return voucherAsClassic(voucher, session, builder); });
-                        simpleChoicesButtons.push(builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text')));
+                        simpleChoicesButtons.push(builder.CardAction.imBack(session, backToMenuText, backToMenuText));
 
                         var voucherCard = new builder.HeroCard()
                             .title(session.gettext('redeem.select_voucher'))
@@ -86,13 +89,14 @@ lib.dialog('/', [
                         builder.Prompts.text(session, message);
 
                         // Getting back to menu option:
-                        var cardActions = [builder.CardAction.imBack(session, session.gettext('redeem.back_to_menu_user_text'), session.gettext('redeem.back_to_menu_user_text'))];
+                        let backToMenuTitle = session.localizer.trygettext(session.preferredLocale(), 'backToMenu.multiple_choices_title', 'back-to-menu');
+                        var cardActions = [builder.CardAction.imBack(session, backToMenuText, backToMenuText)];
                         
                         var card = new builder.HeroCard()
-                            .title('Or')
+                            .title(backToMenuTitle) // TODO: Fix this as well
                             .buttons(cardActions);
                     
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.back_to_menu_user_text') , null, false, false);            
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, backToMenuText , null, false, false);            
                             
                         session.send(new builder.Message(session)
                             .addAttachment(card));
@@ -101,16 +105,17 @@ lib.dialog('/', [
         }
         catch (err){
             session.say('redeem.general_error');
-            logger.log.error('redeem: / dialog 1st function error occured', {error: serializeError(err)});        
+            logger.log.error('redeem: / dialog 1st function error occurred', {error: serializeError(err)});        
             session.endDialog();
             session.replaceDialog('/');
         }
     }, function (session, args) {
         try {
             
-            if (args.response == session.gettext('redeem.back_to_menu_user_text')) {
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, session.gettext('redeem.back_to_menu_user_text'), false, false);
+            if (args.response == backToMenuText) {
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, backToMenuText, false, false);
                 
+                session.conversationData.backState = true;
                 session.endDialog();
                 session.replaceDialog('/');
             }
@@ -130,42 +135,61 @@ lib.dialog('/', [
                 }
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, 'Voucher Redeem Request', false, false);
                 
-                
-                if (session.userData.sender.points < selectedVoucher.points) {
-                    // Not enough points
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points), null, false, false);                                                                   
-                    session.say(session.gettext('redeem.not_enought_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points));
-                    back_to_menu.sendBackToMainMenu(session, builder);
-                } else {
-                    // Continue with the redeem process - send validation email
-                    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.explanation'), null, false, false);                                                                                   
-                    session.say('redeem.explanation');
-                    mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, session.userData.sender.email, 
-                            [{key: '%VOUCHER_ID%', value: selectedVoucher.voucherId},
-                            {key: '%VOUCHER__EMAIL_TITLE%', value: selectedVoucher.emailTitle},
-                            {key: '%VOUCHER_CTA%', value: selectedVoucher.cta},
-                            {key: '%VOUCHER_IMAGE_URL%', value: selectedVoucher.imageUrl},
-                            {key: '%REDEEM_CONFIRMATION_URL%', value: get_redeem_confirmation_url(selectedVoucher, session.userData.sender.user_id, session.userData.sender.email)},
-                        ]).then(() => {
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_sent', session.userData.sender.email), null, false, false);                                                                                   
-                        session.say(session.gettext('redeem.email_sent', session.userData.sender.email));
+                dal.getPointsToUser(session.userData.sender.user_id).then(points => {
+                    session.userData.sender.points = points;
+
+                    if (!session.userData.sender.points) {
+                        session.userData.sender.points = consts.defaultStartPoints;
+                    }
+                    
+                    if (session.userData.sender.points < selectedVoucher.points) {
+                        // Not enough points
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.not_enough_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points), null, false, false);                                                                   
+                        session.say(session.gettext('redeem.not_enough_points', session.userData.sender.points, selectedVoucher.points-session.userData.sender.points));
                         back_to_menu.sendBackToMainMenu(session, builder);
-                        
-                    }).catch(err => {
-                        logger.log.error('redeem: / dialog 2nd function on mailSender.sendTemplateMail error', {error: serializeError(err)});
-                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_error'), null, false, false);                                                                                                       
-                        session.say('redeem.email_error');
+                    } else if (!session.userData.sender.email || session.userData.sender.email.indexOf('@') < 0) {
+                        // No email entered
+                        session.say(session.gettext('redeem.no_details_filled'));
                         back_to_menu.sendBackToMainMenu(session, builder);
-                        
-                    });
-                }
+                    } else {
+                        // Continue with the redeem process - send validation email
+                        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.explanation'), null, false, false);                                                                                   
+                        session.say('redeem.explanation');
+                        mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, session.userData.sender.email, 
+                                [{key: '%VOUCHER_ID%', value: selectedVoucher.voucherId},
+                                {key: '%VOUCHER__EMAIL_TITLE%', value: selectedVoucher.emailTitle},
+                                {key: '%VOUCHER_CTA%', value: selectedVoucher.cta},
+                                {key: '%VOUCHER_IMAGE_URL%', value: selectedVoucher.imageUrl},
+                                {key: '%REDEEM_CONFIRMATION_URL%', value: get_redeem_confirmation_url(selectedVoucher, session.userData.sender.user_id, session.userData.sender.email)},
+                            ]).then(() => {
+                            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_sent', session.userData.sender.email), null, false, false);                                                                                   
+                            session.say(session.gettext('redeem.email_sent', session.userData.sender.email));
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                            
+                        }).catch(err => {
+                            logger.log.error('redeem: / dialog 2nd function on mailSender.sendTemplateMail error', {error: serializeError(err)});
+                            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.email_error'), null, false, false);                                                                                                       
+                            session.say('redeem.email_error');
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                            
+                        });
+                    }
+                }).catch (err => {
+                    session.say('redeem.general_error');
+                    logger.log.error('redeem: error occurred dal.getPointsToUser', {error: serializeError(err)});
+                    session.conversationData.backState = true;
+                    session.endDialog();
+                    session.replaceDialog('/');
+                    
+                });
             }
         }
         catch (err) {
             chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_USER, session.userData.sender.user_id, session.message.source, session.message.text, null, true, false);            
             chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('redeem.general_error'), null, false, false);                                                                                                                   
             session.say('redeem.general_error');
-            logger.log.error('redeem: / dialog 2nd function error occured', {error: serializeError(err)});        
+            logger.log.error('redeem: / dialog 2nd function error occurred', {error: serializeError(err)});        
+            session.conversationData.backState = true;
             session.endDialog();
             session.replaceDialog('/');
         }

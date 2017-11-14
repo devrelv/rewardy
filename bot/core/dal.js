@@ -29,7 +29,7 @@ mongoose.connect(process.env.MONGO_CONNECTION_STRING, {useMongoClient: true}).th
     logger.log.info('dal: connected to database');        
     }
 ).catch(err => {
-    logger.log.error('dal: mongoose.connect error occured', {error: serializeError(err)});
+    logger.log.error('dal: mongoose.connect error occurred', {error: serializeError(err)});
     setTimeout(() => {throw err;}); // The setTimeout is a trick to enable the throw err
 });
 
@@ -45,13 +45,11 @@ let BotUserSchema = new Schema({
         unique: true
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+        type: String // email is not unique because we allow the same email to be in different platforms
     },
     name: {
         type: String,
-        required: true
+        required: false
     },
     language: {
         type: String,
@@ -86,6 +84,13 @@ let BotUserSchema = new Schema({
             type: Schema.Types.Mixed,
             required: false
         }
+    },
+    platforms: {
+        type: Array,
+        default: []
+    },
+    proactive_address: {
+        type: Schema.Types.Mixed
     }
 });
 
@@ -136,18 +141,20 @@ let ReferralUser = mongoose.model('ReferralUserSchema', ReferralUserSchema);
 //     return;
 // }
 
-function saveUserToDatabase(userDetails, language) {
+function saveNewUserToDatabase(userDetails, language) {
     let newBotUser = new BotUser({
-        user_id: userDetails.userId,
+        user_id: userDetails.user_id,
         email: userDetails.email,
         name: userDetails.name,
-        points: consts.defaultStartPoints,
-        language: userDetails.language || consts.defaultUserLanguage
+        points: userDetails.points,
+        language: userDetails.language || consts.defaultUserLanguage,
+        platforms: userDetails.platforms,
+        proactive_address: userDetails.proactive_address
     });
 
     newBotUser.save(function(err) {
         if (err) {
-            logger.log.error('dal: saveUserToDatabase newBotUser.save error occured', {error: serializeError(err), newBotUser: newBotUser});
+            logger.log.error('dal: saveNewUserToDatabase newBotUser.save error occurred', {error: serializeError(err), newBotUser: newBotUser});
         }
     });
 }
@@ -160,7 +167,43 @@ function saveDeviceUserToDatabase(userId, deviceType) {
 
     newDeviceUser.save(function(err) {
         if (err) {
-            logger.log.error('dal: saveDeviceUserToDatabase newDeviceUser.save error occured', {error: serializeError(err), newDeviceUser: newDeviceUser, userId: userId, deviceType: deviceType});
+            logger.log.error('dal: saveDeviceUserToDatabase newDeviceUser.save error occurred', {error: serializeError(err), newDeviceUser: newDeviceUser, userId: userId, deviceType: deviceType});
+        }
+    });
+}
+
+function updateUserPlatforms(userId, platforms) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({user_id: userId}, {$set: {platforms: platforms}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, platforms: platforms});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateUserPlatforms.update error', {error: serializeError(err), user_id: userId, platforms: platforms});
+            reject(err);
+        }
+    });
+}
+
+function updateUserDetails(userId, email, name) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({user_id: userId}, {$set: {email: email, name: name}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateUserDetails.update error', {error: serializeError(err), user_id: userId, email: email, name: name});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateUserDetails.update error', {error: serializeError(err), user_id: userId, email: email, name: name});
+            reject(err);
         }
     });
 }
@@ -171,7 +214,7 @@ function getBotUserById(userId, callback) {
             'user_id': userId
         }, function(err, botUser) {
             if (err) {
-                logger.log.error('dal: getBotUserById BotUser.findOne error occured', {error: serializeError(err), user_id: userId});
+                logger.log.error('dal: getBotUserById BotUser.findOne error occurred', {error: serializeError(err), user_id: userId});
                 reject(err);
             } else {
                 resolve(botUser);
@@ -187,7 +230,7 @@ function getDeviceByUserId(userId, callback) {
             'user_id': userId
         }, function(err, botUser) {
             if (err) {
-                logger.log.error('dal: getDeviceByUserId DeviceUser.findOne error occured', {error: serializeError(err), user_id: userId});
+                logger.log.error('dal: getDeviceByUserId DeviceUser.findOne error occurred', {error: serializeError(err), user_id: userId});
                 reject(err);
             } else {
                 resolve(botUser);
@@ -204,7 +247,7 @@ function saveDeviceUserToDatabase(userId, deviceType){
 
     newDeviceUser.save(function(err) {
         if (err) {
-            logger.log.error('dal: saveDeviceUserToDatabase newDeviceUser.save error occured', {error: serializeError(err), newDeviceUser: newDeviceUser});
+            logger.log.error('dal: saveDeviceUserToDatabase newDeviceUser.save error occurred', {error: serializeError(err), newDeviceUser: newDeviceUser});
             console.log(err);
         }
     });
@@ -216,7 +259,7 @@ function getBotUserByEmail(email) {
             'email': email
         }, function(err, botUser) {
             if (err) {
-                logger.log.error('dal: getBotUserByEmail BotUser.findOne error occured', {error: serializeError(err), email: email});
+                logger.log.error('dal: getBotUserByEmail BotUser.findOne error occurred', {error: serializeError(err), email: email});
                 reject(err);
             } else {
                 resolve(botUser);
@@ -232,7 +275,7 @@ function getInvitedFriendsByUserId(userId) {
             'source.id': userId
         }, function(err, data) {
             if (err) {
-                logger.log.error('dal: getInvitedFriendsByUserId BotUser.find error occured', {error: serializeError(err),  source_type: consts.botUser_source_friendReferral, source_id: userId});
+                logger.log.error('dal: getInvitedFriendsByUserId BotUser.find error occurred', {error: serializeError(err),  source_type: consts.botUser_source_friendReferral, source_id: userId});
                 reject(err);
             } else {
                 resolve(data);
@@ -241,12 +284,34 @@ function getInvitedFriendsByUserId(userId) {
     });
 }
 
+function getPointsToUser(userId) {
+    return new Promise((resolve, reject) => {
+        BotUser.findOne({
+            'user_id': userId
+        }, function(err, data) {
+            if (err) {
+                logger.log.error('dal: getPointsToUser BotUser.find error occurred', {error: serializeError(err),  userId: userId});
+                reject(err);
+            } else {
+                if (data) {
+                    resolve(data.points);                    
+                } else {
+                    resolve(consts.defaultStartPoints);
+                }
+            } 
+        });
+    });
+}
+
 module.exports = {
-    saveUserToDatabase: saveUserToDatabase,
+    saveNewUserToDatabase: saveNewUserToDatabase,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
     getBotUserById: getBotUserById,
     getDeviceByUserId: getDeviceByUserId,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
     getBotUserByEmail: getBotUserByEmail,
     getInvitedFriendsByUserId: getInvitedFriendsByUserId,
+    updateUserPlatforms: updateUserPlatforms,
+    updateUserDetails: updateUserDetails,
+    getPointsToUser: getPointsToUser
 };

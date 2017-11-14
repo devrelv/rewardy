@@ -6,8 +6,8 @@
 		"store": "Amazon",
 		"description": "Online Shopping for Electronics, Apparel, Books & more",
 		"imageUrl": "https://rewardy.co/img/vouchers/amazon.jpg",
-		"points": 1000,
-		"cta": "1,000 points"
+		"points": 1700,
+		"cta": "1,700 points"
 	},
 	{
 		"id": "$10 on Xbox",
@@ -16,8 +16,8 @@
 		"store": "Xbox",
 		"description": "Games and entertainment on Xbox or Windows",
 		"imageUrl": "https://rewardy.co/img/vouchers/xbox.jpg",
-		"points": 1000,
-		"cta": "1,000 points"
+		"points": 1700,
+		"cta": "1,700 points"
 	},
 	{
 		"id": "$10 on iTunes",
@@ -26,8 +26,8 @@
 		"store": "iTunes",
 		"description": "App Store, iTunes Store and even iBooks Store",
 		"imageUrl": "https://rewardy.co/img/vouchers/iTunes.jpg",
-		"points": 1000,
-		"cta": "1,000 points"
+		"points": 1700,
+		"cta": "1,700 points"
 	},
 	{
 		"id": "$10 on Google",
@@ -36,7 +36,7 @@
 		"store": "Google",
 		"description": "Music, movies, TV shows, books, and Android apps and games",
 		"imageUrl": "https://rewardy.co/img/vouchers/google-play.jpg",
-		"points": 1000,
-		"cta": "1,000 points"
+		"points": 1700,
+		"cta": "1,700 points"
 	}
 ]

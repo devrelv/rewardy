@@ -18,7 +18,7 @@ lib.dialog('/', [
     function (session, args, next) {
         try {
             if (args.response) {
-                if (!session.userData.sender || !session.userData.sender.email) {
+                if (!session.userData.sender || !session.userData.sender.email || session.userData.sender.email.indexOf('@') < 0) {
                     chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.fill_email'), null, false, false);                                                                                                                                   
                     builder.Prompts.text(session, session.gettext('help.fill_email'));
                 } else {
@@ -26,6 +26,7 @@ lib.dialog('/', [
                 }
             } else {
                 chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.no_help_needed'), null, false, false);                                                                                                                                                   
+                session.conversationData.backState = true;
                 session.endDialog(session.gettext('help.no_help_needed'));
                 session.replaceDialog('/');
             }
@@ -42,11 +43,16 @@ lib.dialog('/', [
     }
 ]);
 //]).triggerAction({matches: /\bhelp\b/i,});
-
+let userEmail;
 lib.dialog('help_get_user_message', [
     function (session) {
-        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.leave_question', session.userData.sender.email), null, false, false);                                                                                                                                                           
-        builder.Prompts.text(session, session.gettext('help.leave_question', session.userData.sender.email));
+        if (session.userData.sender.email && session.userData.sender.email.indexOf('@')>-1) {
+            userEmail = session.userData.sender.email;
+        } else {
+            userEmail = session.userData.sender.email_for_help;                    
+        }
+        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.leave_question', userEmail), null, false, false);                                                                                                                                                           
+        builder.Prompts.text(session, session.gettext('help.leave_question', userEmail));
     }, function (session, args) {
          session.privateConversationData = { userQuestion: args.response };
         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.confirm_sending'), null, false, false);                                                                                                                                                                  
@@ -56,11 +62,12 @@ lib.dialog('help_get_user_message', [
             if (args.response) {
                 var details = {sender: session.userData.sender, platform: session.message.source};
                 mailSender.sendTemplateMail(consts.MAIL_TEMPLATE_HELP_QUESTION, 'hello@rewardy.co', 
-                        [{key: '%USER_EMAIL%', value: session.userData.sender.email},
+                        [{key: '%USER_EMAIL%', value: userEmail},
                         {key: '%DATE%', value: (new Date()).toUTCString()},
                         {key: '%USER_MESSAGE%', value: session.privateConversationData.userQuestion},
                         {key: '%USER_DETAILS%', value: JSON.stringify(serializeError(details))}]).then (data =>
                 {
+                    session.conversationData.backState = true;
                     session.endDialog(session.gettext('help.message_received'));
                     session.replaceDialog('/');
                 }).catch (err => {
@@ -71,7 +78,8 @@ lib.dialog('help_get_user_message', [
                     session.replaceDialog('help_get_user_message');
                 });
             } else {
-                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.cancelling'), null, false, false);                                                                                                                                                                                      
+                chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('help.cancelling'), null, false, false);
+                session.conversationData.backState = true;
                 session.endDialog(session.gettext('help.cancelling'))
                 session.replaceDialog('/');
             }
@@ -80,7 +88,6 @@ lib.dialog('help_get_user_message', [
         }
     }]);
 
-// TODO: use locale for the messages
 lib.dialog('help_validate_email', [
     function (session, args) {
         if (!args || !args.response) {
@@ -91,7 +98,7 @@ lib.dialog('help_validate_email', [
             builder.Prompts.text(session, 'help.no_valid_mail');            
         } else {
             session.userData.sender = session.userData.sender || {};
-            session.userData.sender.email = args.response;
+            session.userData.sender.email_for_help = args.response;
             session.replaceDialog('help_get_user_message');        
         }
     }, 

@@ -37,10 +37,10 @@ function sendSingleMessage(type, userId, platform, message, intent, not_handled,
         }
         
         msg.send().catch((err) => {
-            logger.log.error('chatBase: sendSingleMessage promise error occured', {error: serializeError(err)});
+            logger.log.error('chatBase: sendSingleMessage promise error occurred', {error: serializeError(err)});
         });
     } catch (err) {
-        logger.log.error('chatBase: sendSingleMessage error occured', {error: serializeError(err)});        
+        logger.log.error('chatBase: sendSingleMessage error occurred', {error: serializeError(err)});        
     }
     
 }
@@ -74,18 +74,24 @@ function sendMultipleMessages(arrayOfMessage) {
                     }
                     
                 } catch (err) {
-                    logger.log.error('chatBase: sendMultipleMessages error occured', {error: serializeError(err)});        
+                    logger.log.error('chatBase: sendMultipleMessages error occurred', {error: serializeError(err)});        
                 }
             }
             msgs.sendMessageSet().catch((err) => {
-                logger.log.error('chatBase: sendMultipleMessages promise error occured', {error: serializeError(err)});
+                logger.log.error('chatBase: sendMultipleMessages promise error occurred', {error: serializeError(err)});
             });
         }
     } catch (err) {
-        logger.log.error('chatBase: sendMultipleMessages error occured', {error: serializeError(err)});        
+        logger.log.error('chatBase: sendMultipleMessages error occurred', {error: serializeError(err)});        
     }
     
     
+}
+
+function linkTrackingWrapUrl(url, platform) {
+    platform = platform || 'unknown';
+    return 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + url + '&platform=' + platform;
+
 }
 
 module.exports = {
@@ -93,5 +99,6 @@ module.exports = {
     CHATBASE_TYPE_FROM_BOT: CHATBASE_TYPE_FROM_BOT,
     sendSingleMessage: sendSingleMessage,
     sendMultipleMessages: sendMultipleMessages,
+    linkTrackingWrapUrl: linkTrackingWrapUrl
     
 }

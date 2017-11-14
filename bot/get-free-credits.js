@@ -50,7 +50,7 @@ lib.dialog('/', [
                 back_to_menu.sendBackToMainMenu(session, builder);
             });
         } catch (err) {
-            logger.log.error('get-free-credits: error occured', {error: serializeError(err)});
+            logger.log.error('get-free-credits: error occurred', {error: serializeError(err)});
             throw err;
         }
     }
@@ -73,7 +73,7 @@ function offerWallLinkForUser(session, deviceType, userId) {
         appId = consts.SPONSOR_PAY_APP_ID_DESKTOP;
     }
 
-    return 'https://rewardy.co/offers.html?uid=' + session.userData.sender.user_id;
+    return chatbase.linkTrackingWrapUrl('https://rewardy.co/offers.html?uid=' + session.userData.sender.user_id, session.message.source);
 }
 
 

@@ -1,5 +1,18 @@
 {
-    "backToMenu.title" : "What's next?",
-    "backToMenu.back_to_menu": "Get back to menu"  
-
+    "backToMenu.multiple_choices_title": "Or",
+    "backToMenu.multiple_choices_text": "Get back to menu",
+    "backToMenu.title1": "Return to root menu",
+    "backToMenu.title2": "What's next? Back to main menu",
+    "backToMenu.title3": "What's now? Back to main menu",
+    "backToMenu.title4": "That's it. Back to main menu?",
+    "backToMenu.title5": "Back to main menu",
+    "backToMenu.back_to_menu1": "Okay!",
+    "backToMenu.back_to_menu2": "Awesome!",
+    "backToMenu.back_to_menu3": "Got it!",
+    "backToMenu.back_to_menu4": "Stunning!",
+    "backToMenu.back_to_menu5": "Wonderful!",
+    "backToMenu.back_to_menu6": "Cool!",
+    "backToMenu.back_to_menu7": "Marvelous!",
+    "backToMenu.back_to_menu8": "Fantastic!",
+    "backToMenu.back_to_menu9": "Fabulous!"
 }
