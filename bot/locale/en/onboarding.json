@@ -1,0 +1,26 @@
+{
+    "onboarding.into" : "Do you like free gifts?",
+    "onboarding.yes1" : "Well.. Yeah",
+    "onboarding.yes2" : "Yes!",
+    "onboarding.use_quick_reply" : "This bot is for lazy people.. Just pick an option from the quick reply",
+    "onboarding.choose_voucher_store" : "Awesome, me too!\n\rNow, for which store do you want to get your voucher at?",
+    "onboarding.other_voucher" : "Other",
+    "onboarding.great_voucher_selection" : "That's a great store, I also like %s all day",
+    "onboarding.available_vouchers": "These are the vouchers that might interest you:",
+    "onboarding.so_lets_start": "So.... What do you think?",
+    "onboarding.start_making_points": "LET'S START MAKING POINTS!",
+    "onboarding.making_points_options" : "That's the spirit!! 😎\n\rYou can get points by completing tasks or by inviting friends\n\rWhat do you want to start with?",
+    "onboarding.invite_friends" : "Invite friends",
+    "onboarding.take_tasks" : "Take some tasks",
+    "onboarding.not_now" : "I'll do it later",
+    "onboarding.default_title" : "Please choose",
+    "onboarding.well_done" : "Yeahhh! You did it! Well done!\n\rNow let's check all other options",
+    "onboarding.it_will_take_time" : "Well... we didn't receive anything yet.\n\rIt might take some time for our systems to be updated\n\rFill your details and we will send you an email once copmleted\n\rIn the meanwhile, let's explore all other options",
+    "onboarding.and": "And.....",
+    "onboarding.done": "I'm Done",
+    "onboarding.get_new_store" : "Where would you like to get vouchers to?",
+    "onboarding.store_sent_to_us" : "Thanks for helping, I will check if we can add this store to our vouchers list\n\rUntil we will do it, please check from existing stores",
+    "onboarding.back_to_menu_title" : "show all options?",
+    "onboarding.back_to_menu_option" : "Yeap"
+    
+}
