@@ -75,10 +75,12 @@ var bot = new builder.UniversalBot(connector, [
             if (session.message.text.length > 0) {
                 session.message.text = "";
             }
+            return session.beginDialog('onboarding:/');
             
+        } else {
+            session.conversationData.onboarding = false;
+            return next();
         }
-
-        return next();
     },
     function (session, args, next) {
         try {
@@ -158,6 +160,7 @@ bot.library(require('./check-credits').createLibrary());
 bot.library(require('./get-free-credits').createLibrary());
 bot.library(require('./invite').createLibrary());
 bot.library(require('./help').createLibrary());
+bot.library(require('./onboarding').createLibrary());
 
 // Validators
 bot.library(require('./core/validators').createLibrary());

@@ -31,6 +31,7 @@ module.exports = {
     MAIL_TEMPLATE_REDEEM_REQUEST: 'redeem_request',
     MAIL_TEMPLATE_HELP_QUESTION: 'help_question',
     MAIL_TEMPLATE_REDEEM_CONFIRMATION: 'redeem_confirmation',
+    MAIL_TEMPLATE_NEW_STORE_REQUEST: 'new_store_request',
 
     SERVER_API_URL: 'http://rewardy-server.azurewebsites.net/api/', 
 

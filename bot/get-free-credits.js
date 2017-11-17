@@ -43,7 +43,11 @@ lib.dialog('/', [
                 } else {
                     sendUserOfferWallUrl(session, userResult.type, session.userData.sender.user_id);                
                 }
-                back_to_menu.sendBackToMainMenu(session, builder);
+                if (!session.conversationData.onboarding) {
+                    back_to_menu.sendBackToMainMenu(session, builder);
+                } else {
+                    session.replaceDialog('onboarding:back_from_task_or_invite');                    
+                }
             }).catch(err => {
                 logger.log.error('get-free-credits: dal.getDeviceByUserId error', {error: serializeError(err)});
                 sendUserOfferWallUrl(session, consts.DEVICE_TYPE_DESKTOP, session.userData.sender.user_id);

@@ -16,7 +16,7 @@ try {
     //var helpTemplate = new MailTemplate(Consts.MAIL_TEMPLATE_HELP_QUESTION, 'redeem.mail.help_subject', 'redeem.mail.help_html', 'redeem.mail.help_text');
     // TODO: Use above line after integrating with locale
     var helpTemplate = new MailTemplate(Consts.MAIL_TEMPLATE_HELP_QUESTION, 'User Question %USER_EMAIL%', 
-                'This is the user as sent by the user at %DATE%:<br/><b>%USER_MESSAGE%</b><br/><br/>User Details:<br/>%USER_DETAILS%',
+                'This is the message as sent by the user at %DATE%:<br/><b>%USER_MESSAGE%</b><br/><br/>User Details:<br/>%USER_DETAILS%',
                 'This is the user as sent by the user at %DATE%: %USER_MESSAGE%    User Details:  %USER_DETAILS%');
     mailTemplates.push(helpTemplate);
 
@@ -25,6 +25,12 @@ try {
     // %VOUCHER_TITLE%, %VOUCHER_STORE%, %VOUCHER_CTA%, %VOUCHER_IMAGE_URL%, %REDEEM_CONFIRMATION_URL%
     var redeem_confirm = new MailTemplate(Consts.MAIL_TEMPLATE_REDEEM_CONFIRMATION, 'Rewardy Voucher Confirmation', redeem_confirm_content,redeem_confirm_content);
     mailTemplates.push(redeem_confirm);
+
+    var helpTemplate = new MailTemplate(Consts.MAIL_TEMPLATE_NEW_STORE_REQUEST, 'User Store Request: %STORE_NAME%',
+    'Requested Store: %STORE_NAME%<br/><br/>User Details:<br/>%USER_DETAILS%',
+    null);
+    mailTemplates.push(helpTemplate);
+    
 }
 catch (err) {
     logger.log.error('mail-templates: noScope error occurred', {error: serializeError(err)});
