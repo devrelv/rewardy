@@ -14,13 +14,13 @@
     "onboarding.take_tasks" : "Take some tasks",
     "onboarding.not_now" : "I'll do it later",
     "onboarding.default_title" : "Please choose",
-    "onboarding.well_done" : "Yeahhh! You did it! Well done!\n\rNow let's check all other options",
-    "onboarding.it_will_take_time" : "Well... we didn't receive anything yet.\n\rIt might take some time for our systems to be updated\n\rFill your details and we will send you an email once copmleted\n\rIn the meanwhile, let's explore all other options",
+    "onboarding.well_done" : "Yeah! You did it! Well done!\n\rNow let's check all other options",
+    "onboarding.it_will_take_time" : "Well... we didn't receive anything yet.\n\rIt might take some time for our systems to be updated\n\rFill your details and we will send you an email once completed\n\rIn the meanwhile, let's explore all other options",
     "onboarding.and": "And.....",
     "onboarding.done": "I'm Done",
     "onboarding.get_new_store" : "Where would you like to get vouchers to?",
     "onboarding.store_sent_to_us" : "Thanks for helping, I will check if we can add this store to our vouchers list\n\rUntil we will do it, please check from existing stores",
     "onboarding.back_to_menu_title" : "show all options?",
-    "onboarding.back_to_menu_option" : "Yeap"
+    "onboarding.back_to_menu_option" : "Yes!"
     
 }
