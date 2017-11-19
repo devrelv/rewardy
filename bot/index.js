@@ -8,7 +8,7 @@ const serializeError = require('serialize-error');
 const chatbase = require('./core/chatbase');
 var uuid = require('uuid');
 
-logger.log.info('Bot started');
+logger.log.info('Bot started on MICROSOFT_APP_ID ' + process.env.MICROSOFT_APP_ID);
 
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,

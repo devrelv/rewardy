@@ -90,8 +90,7 @@ function sendMultipleMessages(arrayOfMessage) {
 
 function linkTrackingWrapUrl(url, platform) {
     platform = platform || 'unknown';
-    return 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + url + '&platform=' + platform;
-
+    return 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + encodeURIComponent(url) + '&platform=' + platform;
 }
 
 module.exports = {
