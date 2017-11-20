@@ -1,0 +1,7 @@
+{
+    "proactive.referral_message" : "Christmas came early this year 🎉! \n\rYou just received %s points referral bonus for introducing %s to Rewardy.\n\rMore Friends=More Points",
+    "proactive.referral_joined" : "Your friend %s just joined Rewardy thanks to you!\r\nHe just need to complete %s offer and you receive your referral bonus. 🤑",
+    "proactive.daily_bonus" : "Well-done! you received your daily bonus! 🤑\r\nCheck the offers page every day to get more free points",
+    "proactive.offer_completed" : "Yeah! You just received %s points for task completion 🎖\r\nI just have been informed that your task has been completed and authorized\r\n",
+    "proactive.inactivity_7days" : "Knock knock 👋🏼\r\nI didn't hear from you in a while.\r\nDon't you like my vouchers?"
+}

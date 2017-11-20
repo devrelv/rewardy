@@ -161,6 +161,7 @@ bot.library(require('./get-free-credits').createLibrary());
 bot.library(require('./invite').createLibrary());
 bot.library(require('./help').createLibrary());
 bot.library(require('./onboarding').createLibrary());
+bot.library(require('./proactive-dialogs').createLibrary());
 
 // Validators
 bot.library(require('./core/validators').createLibrary());
@@ -237,6 +238,28 @@ function listen() {
     };
 }
 
+let proactiveMessages = require('./core/proactive_messages');
+function send_proactive_message(address, userId, messageId, messageData) {
+    try {
+        address = JSON.parse(address);
+        messageData = JSON.parse(messageData);
+
+        let messageObj = proactiveMessages.getMessageToSend(address, messageId, messageData);
+        
+        if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_MESSAGE) {
+            let msg = new builder.Message().address(address);
+            msg.text(messageObj.message);
+            msg.textLocale('en-US');
+            bot.send(msg);
+        } else if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_DIALOG) {
+            bot.beginDialog(address, messageObj.message, messageData);
+        }
+    } catch (err) {
+        logger.log.error('error on send_proactive_message', {error: err});
+    }
+  
+}
+
 // Other wrapper functions
 function beginDialog(address, dialogId, dialogArgs) {
     bot.beginDialog(address, dialogId, dialogArgs);
@@ -254,5 +277,6 @@ module.exports = {
     connect: connect,
     listen: listen,
     beginDialog: beginDialog,
-    sendMessage: sendMessage
+    sendMessage: sendMessage,
+    send_proactive_message: send_proactive_message
 };
