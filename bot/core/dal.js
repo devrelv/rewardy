@@ -127,8 +127,7 @@ let ReferralUser = mongoose.model('ReferralUserSchema', ReferralUserSchema);
 let InvitationSchema = new Schema({
     inviting_user_id: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     invited_email: {
         type: String,
