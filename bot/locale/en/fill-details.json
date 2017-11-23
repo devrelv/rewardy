@@ -7,5 +7,6 @@
     "confirm_mail_for_new_user": "This email address (%s) is new for me.\n\rAre you a new user? 👶🏼",
     "fill-details.confirm_email_address": "Please confirm your email address - %s\n\rIs this your email address?",
     "fill-details.explanation": "In order to send the vouchers to your mail, I need your email address\n\rI promise not to spam you! 👼🏽",
-    "fill-details.success": "Wowee! your details have been updated"
+    "fill-details.success": "Wowee! your details have been updated",
+    "fill-details.error": "Oh no! something went wrong. please try again please"
 }

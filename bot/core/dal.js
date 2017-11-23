@@ -124,6 +124,27 @@ let ReferralUserSchema = new Schema({
 
 let ReferralUser = mongoose.model('ReferralUserSchema', ReferralUserSchema);
 
+let InvitationSchema = new Schema({
+    inviting_user_id: {
+        type: String,
+        required: true
+    },
+    invited_email: {
+        type: String,
+        required: true
+    },
+    invitation_completed: {
+        type: Boolean,
+        default: 0,
+        required: true
+    },
+    created_at: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
+});
+let Invitation = mongoose.model('Invitation', InvitationSchema);
 
 
 
@@ -208,7 +229,7 @@ function updateUserDetails(userId, email, name) {
     });
 }
 
-function getBotUserById(userId, callback) {
+function getBotUserById(userId) {
     return new Promise((resolve, reject)=>{
         BotUser.findOne({
             'user_id': userId
@@ -284,6 +305,20 @@ function getInvitedFriendsByUserId(userId) {
     });
 }
 
+function updateUserSource(userId, source) {
+    return new Promise((resolve, reject) => {
+        BotUser.update({user_id: userId}, {$set: {'source' : source }}, (err, res) => {
+            if (err) {
+                logger.log.error('dal: updateUserSource.update error', {error: serializeError(err), user_id: userId, source: source});
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    }); 
+}
+
+
 function getPointsToUser(userId) {
     return new Promise((resolve, reject) => {
         BotUser.findOne({
@@ -303,6 +338,44 @@ function getPointsToUser(userId) {
     });
 }
 
+function markInvitationAsCompleted(inviting_user_id, invited_email) {
+    return new Promise((resolve, reject) => {        
+        try {
+            Invitation.update({inviting_user_id: inviting_user_id, invited_email: invited_email}, {$set: {'invitation_completed': 1}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: markInvitationAsCompleted.update error', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: markInvitationAsCompleted.update error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+}
+
+function getInvitationByInvitedEmail(invited_email) {
+    return new Promise((resolve, reject) => {        
+        try {
+            Invitation.findOne({
+               'invited_email': invited_email, 'invitation_completed': 0
+            }, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: markInvitationAsCompleted.findOne error', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: markInvitationAsCompleted.findOne error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+}
+
 module.exports = {
     saveNewUserToDatabase: saveNewUserToDatabase,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
@@ -313,5 +386,9 @@ module.exports = {
     getInvitedFriendsByUserId: getInvitedFriendsByUserId,
     updateUserPlatforms: updateUserPlatforms,
     updateUserDetails: updateUserDetails,
-    getPointsToUser: getPointsToUser
+    getPointsToUser: getPointsToUser,
+    updateUserSource: updateUserSource,
+    markInvitationAsCompleted: markInvitationAsCompleted,
+    getInvitationByInvitedEmail: getInvitationByInvitedEmail
+
 };

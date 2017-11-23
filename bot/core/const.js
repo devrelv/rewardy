@@ -33,6 +33,15 @@ module.exports = {
     MAIL_TEMPLATE_REDEEM_CONFIRMATION: 'redeem_confirmation',
     MAIL_TEMPLATE_NEW_STORE_REQUEST: 'new_store_request',
 
+    PROACTIVE_MESSAGES_REFERRAL_BONUS: 0,
+    PROACTIVE_MESSAGES_REFERRAL_JOINED: 1,
+    PROACTIVE_MESSAGES_REFERRAL_OFFER_COMPLETED: 2,
+    PROACTIVE_MESSAGES_DAILY_BONUS: 3,
+    PROACTIVE_MESSAGES_INACTIVITY_7DAYS: 4,
+
+    PROACTIVE_MESSAGES_TYPE_MESSAGE: 0,
+    PROACTIVE_MESSAGES_TYPE_DIALOG: 1,
+
     SERVER_API_URL: 'http://rewardy-server.azurewebsites.net/api/', 
 
     botFramework_Channels : {facebook: 'facebook', skype: 'skype', telegram: 'telegram', kik: 'kik', email: 'email',

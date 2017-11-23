@@ -199,7 +199,7 @@ lib.dialog('/', [
 function get_redeem_confirmation_url(voucher, userId, userEmail) {
      
     var verificationCode = hash({voucherId: voucher.voucherId, userId: userId, email: userEmail});
-    return consts.SERVER_API_URL + 'confirm_voucher?vid=' + voucher.voucherId + '&uid=' + userId + '&userEmail=' + userEmail + '&code=' + verificationCode;
+    return process.env.SERVER_API_URL + 'confirm_voucher?vid=' + voucher.voucherId + '&uid=' + userId + '&userEmail=' + userEmail + '&code=' + verificationCode;
 }
 
 // Export createLibrary() function

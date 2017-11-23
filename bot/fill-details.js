@@ -81,17 +81,59 @@ lib.dialog('userDetails', [
         }
     },
     function (session, result) {
-        session.userData.sender = session.userData.sender || {};
-        session.userData.sender.email = userEmail;
-        session.userData.sender.name = result.response;
+        dal.getInvitationByInvitedEmail(userEmail).then((invitationDetails)=>{
+            if (invitationDetails && !invitationDetails.invitation_completed) {
+                Promise.all(
+                    [dal.markInvitationAsCompleted(invitationDetails.inviting_user_id, invitationDetails.invited_email),
+                    dal.updateUserSource(session.userData.sender.user_id, {type: consts.botUser_source_friendReferral, id: invitationDetails.inviting_user_id })]).then (()=> {
+                        dal.updateUserDetails(session.userData.sender.user_id, userEmail, result.response).then(()=> {
+                            dal.getBotUserById(invitationDetails.inviting_user_id).then(invitingUser => {
+                                var index = require('./index');
+                                var proactiveMessageData = {friendName:  result.response,num_of_tasks_for_referral: consts.minimumCompletedOffersForReferalToCount};
+                                index.send_proactive_message(JSON.stringify(invitingUser.proactive_address), invitingUser.user_id, consts.PROACTIVE_MESSAGES_REFERRAL_JOINED, JSON.stringify(proactiveMessageData));
+                            });
+                            detailsCompletedSuccess(session, userEmail, result.response);
+                            
+                        }).catch(err=>{
+                            detailsCompletedFail(session, err);
+                        });
+                    })
+            } else {
+                dal.updateUserDetails(session.userData.sender.user_id, userEmail, result.response).then(()=> {
+                    detailsCompletedSuccess(session, userEmail, result.response);
+                }).catch(err=>{
+                    detailsCompletedFail(session, err);
+                });
 
-        dal.updateUserDetails(session.userData.sender.user_id, session.userData.sender.email, session.userData.sender.name)
-        session.send(session.gettext('fill-details.success'));
-        session.conversationData.backState = true;
-        session.endDialog();
-        session.replaceDialog('/');
+            }
+
+           
+        }).catch(err=>{
+            detailsCompletedFail(session, err);
+        });
+       
     }
 ]);
+
+function detailsCompletedSuccess(session, userEmail, userName) {
+    session.userData.sender = session.userData.sender || {};
+    session.userData.sender.email = userEmail;
+    session.userData.sender.name = userName;
+
+    
+    session.send(session.gettext('fill-details.success'));
+    session.conversationData.backState = true;
+    session.endDialog();
+    session.replaceDialog('/');
+}
+
+function detailsCompletedFail(session, err) {
+    logger.log.error('fill-details: dal.updateUserDetails error', {error: serializeError(err)});                    
+    session.send(session.gettext('fill-details.error'));
+    session.conversationData.backState = true;
+    session.endDialog();
+    session.replaceDialog('/');
+}
 
 // Export createLibrary() function
 module.exports.createLibrary = function () {

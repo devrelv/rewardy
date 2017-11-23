@@ -9,7 +9,6 @@ const back_to_menu = require('./back-to-menu');
 const chatbase = require('./core/chatbase');
 const dal = require('./core/dal');
 
-// TODO: Load the locale
 lib.dialog('/', [
     function (session) {
         try {

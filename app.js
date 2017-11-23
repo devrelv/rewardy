@@ -54,6 +54,14 @@ app.use('/viber/webhook', viberChannel.listen());
 app.use(bodyParser.json()); // Only the next lines should be on json
 
 app.post('/api/messages', bot.listen());
+app.get('/proactive', (req,res) => {
+  var address = req.query.message_address;
+  var messageId = req.query.message_id;
+  var messageData = req.query.message_data;
+  var userId = req.query.user_id;
+  bot.send_proactive_message(address, userId, messageId, messageData);
+  res.send('Done');
+});
 
 
 // Catch 404 and forward to error handler
