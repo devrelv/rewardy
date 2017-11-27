@@ -1,11 +1,33 @@
 [
 	{
+		"id": "$10 on PayPal",
+		"title": "$10 Paypal Gift Card for 1,700 points",
+		"emailTitle": "$10 Gift Card on Paypal",
+		"store": "Paypal",
+		"description": "Online payments system",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/paypal.jpg",
+		"points": 1700,
+		"cta": "1,700 points",
+		"actionDescription": "paying for stuff"
+	},
+	{
+		"id": "$10 on eBay",
+		"title": "$10 eBay Gift Card for 1,700 points",
+		"emailTitle": "$10 Gift Card on eBay",
+		"store": "eBay",
+		"description": "Online Shopping for Electronics, Apparel, Books & more",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/ebay.jpg",
+		"points": 1700,
+		"cta": "1,700 points",
+		"actionDescription": "shopping"
+	},
+	{
 		"id": "$10 on Amazon",
 		"title": "$10 Amazon Gift Card for 1,700 points",
 		"emailTitle": "$10 Gift Card on Amazon",
 		"store": "Amazon",
 		"description": "Online Shopping for Electronics, Apparel, Books & more",
-		"imageUrl": "https://rewardy.co/img/vouchers/amazon.jpg",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/amazon.jpg",
 		"points": 1700,
 		"cta": "1,700 points",
 		"actionDescription": "shopping"
@@ -16,7 +38,7 @@
 		"emailTitle": "$10 Gift Card on Xbox",
 		"store": "Xbox",
 		"description": "Games and entertainment on Xbox or Windows",
-		"imageUrl": "https://rewardy.co/img/vouchers/xbox.jpg",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/xbox.jpg",
 		"points": 1700,
 		"cta": "1,700 points",
 		"actionDescription": "playing FIFA"		
@@ -27,7 +49,7 @@
 		"emailTitle": "$10 Gift Card on iTunes",
 		"store": "iTunes",
 		"description": "App Store, iTunes Store and even iBooks Store",
-		"imageUrl": "https://rewardy.co/img/vouchers/iTunes.jpg",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/iTunes.jpg",
 		"points": 1700,
 		"cta": "1,700 points",
 		"actionDescription": "listening to U2"		
@@ -38,7 +60,7 @@
 		"emailTitle": "$10 Gift Card on Google",
 		"store": "Google",
 		"description": "Music, movies, TV shows, books, and Android apps and games",
-		"imageUrl": "https://rewardy.co/img/vouchers/google-play.jpg",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/google-play.jpg",
 		"points": 1700,
 		"cta": "1,700 points",
 		"actionDescription": "playing Candy Crush"		
