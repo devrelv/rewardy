@@ -31,7 +31,10 @@ function sendCustomMail(toEmail, subject, text, html) {
                 auth: {
                     user: process.env.EMAIL_USERNAME, // generated ethereal user
                     pass: process.env.EMAIL_PASSWORD  // generated ethereal password
-                }
+                }, 
+                tls: {
+                    secureProtocol: "TLSv1_method"
+                }                    
             });
             transporter.sendMail(mailOptions, sendMailCallback);
             
