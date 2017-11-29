@@ -23,7 +23,9 @@ function initArray(session)  {
     messagesArray[consts.PROACTIVE_MESSAGES_INACTIVITY_7DAYS] = {};
     messagesArray[consts.PROACTIVE_MESSAGES_INACTIVITY_7DAYS].type = consts.PROACTIVE_MESSAGES_TYPE_DIALOG;
     messagesArray[consts.PROACTIVE_MESSAGES_INACTIVITY_7DAYS].message = 'proactive-dialogs:inactivity_7days';
-    
+    messagesArray[consts.PROACTIVE_MESSAGES_CUSTOM] = {};
+    messagesArray[consts.PROACTIVE_MESSAGES_CUSTOM].type = consts.PROACTIVE_MESSAGES_TYPE_DIALOG;
+    messagesArray[consts.PROACTIVE_MESSAGES_CUSTOM].message = 'proactive-dialogs:custom';
     
 }
 

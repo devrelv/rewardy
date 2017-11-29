@@ -29,7 +29,7 @@ lib.dialog('daily_bonus', [
     function (session, args) {
         session.conversationData.backState = false;
         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('proactive.daily_bonus'), null, false, false);
-        session.send(session.gettext('proactive.daily_bonus',args.referralPoints, args.friendName));
+        session.send(session.gettext('proactive.daily_bonus'));
 
         back_to_menu.sendBackToMainMenu(session, builder);
     }
@@ -39,7 +39,7 @@ lib.dialog('offer_completed', [
     function (session, args) {
         session.conversationData.backState = false;
         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('proactive.offer_completed'), null, false, false);
-        session.send(session.gettext('proactive.offer_completed',args.referralPoints, args.friendName));
+        session.send(session.gettext('proactive.offer_completed', args.points));
 
         back_to_menu.sendBackToMainMenu(session, builder);
     }
@@ -48,12 +48,22 @@ lib.dialog('offer_completed', [
 lib.dialog('inactivity_7days', [
     function (session, args) {
         session.conversationData.backState = false;
-        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('proactive.referral_message'), null, false, false);
-        session.send(session.gettext('proactive.referral_message',args.referralPoints, args.friendName));
+        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('proactive.inactivity_7days'), null, false, false);
+        session.send(session.gettext('proactive.inactivity_7days'));
 
         // card with 2 buttons: 
         // 1. Disable these notifications (+ Let the user tell us why he left us).
         // 2. Make money now (main menu).
+    }
+]);
+
+lib.dialog('custom', [
+    function (session, args) {
+        session.conversationData.backState = false;
+        chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'custom proactive message', null, false, false);
+        session.send(args.message);
+
+        back_to_menu.sendBackToMainMenu(session, builder);
     }
 ]);
 
