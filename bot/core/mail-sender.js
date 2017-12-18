@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const mailTemplates = require('./mail-templates.js');
 const logger = require('./logger');
 const serializeError = require('serialize-error');
+const validators = require('./validators');
 
 function sendCustomMail(toEmail, subject, text, html) {
     // send mail with defined transport object
@@ -11,7 +12,15 @@ function sendCustomMail(toEmail, subject, text, html) {
             var toEmailAsString;
             if (Array.isArray(toEmail)) {
                 toEmailAsString = toEmail.join(',');
+                for (let i=0;i<toEmail.length;i++) {                    
+                    if (!validators.EmailRegex.test(toEmail[i])) {
+                        reject('invalid email address: ' + toEmail[i]);
+                    }
+                }
             } else {
+                if (!validators.EmailRegex.test(toEmail)) {
+                    reject('invalid email address: ' + toEmail);
+                }
                 toEmailAsString = toEmail;
             }
             // setup email data with unicode symbols
