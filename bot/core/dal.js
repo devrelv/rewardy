@@ -376,6 +376,26 @@ function getInvitationByInvitedEmail(invited_email) {
     });
 }
 
+function getAllBotUsers (){
+    return new Promise((resolve, reject) => {        
+        try {
+            // BotUser.find({user_id: 'aa29dc60-e36d-11e7-91e8-b59d09a796b9'}, (err, res) => {
+            BotUser.find({}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: getAllBotUsers.find error', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: getAllBotUsers error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+
+}
+
 module.exports = {
     saveNewUserToDatabase: saveNewUserToDatabase,
     saveDeviceUserToDatabase: saveDeviceUserToDatabase,
@@ -389,6 +409,7 @@ module.exports = {
     getPointsToUser: getPointsToUser,
     updateUserSource: updateUserSource,
     markInvitationAsCompleted: markInvitationAsCompleted,
-    getInvitationByInvitedEmail: getInvitationByInvitedEmail
+    getInvitationByInvitedEmail: getInvitationByInvitedEmail,
+    getAllBotUsers: getAllBotUsers
 
 };

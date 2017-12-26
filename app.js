@@ -63,6 +63,17 @@ app.get('/proactive', (req,res) => {
   res.send('Done');
 });
 
+app.get('/broadcast_all_users', (req,res) => {
+  var key = req.query.key;
+  var message = req.query.message;
+  if (key != '1234') {
+    res.send('Wrong Key');
+  } else {
+    bot.broadcastAllUsers(message);    
+    res.send('Done');
+  }
+});
+
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
