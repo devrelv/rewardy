@@ -260,6 +260,22 @@ function send_proactive_message(address, userId, messageId, messageData) {
   
 }
 
+function broadcastAllUsers(message) {
+    dal.getAllBotUsers().then(users => {
+        logger.log.info('starting broadcastAllUsers - ' + users.length + ' users found');
+        for (let i=0; i<users.length; i++) {
+            try {
+                send_proactive_message(JSON.stringify(users[i].proactive_address), users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message}));
+                logger.log.info('message sent to user' + users[i].user_id);
+            } catch (err) {
+                logger.log.error('error on broadcastAllUsers for user ' + users[i].user_id, {error: err});
+            }            
+        }
+        logger.log.info('finished broadcastAllUsers users');
+        
+    });
+}
+
 // Other wrapper functions
 function beginDialog(address, dialogId, dialogArgs) {
     bot.beginDialog(address, dialogId, dialogArgs);
@@ -278,5 +294,6 @@ module.exports = {
     listen: listen,
     beginDialog: beginDialog,
     sendMessage: sendMessage,
-    send_proactive_message: send_proactive_message
+    send_proactive_message: send_proactive_message,
+    broadcastAllUsers: broadcastAllUsers
 };
