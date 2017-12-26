@@ -77,7 +77,7 @@ function offerWallLinkForUser(session, deviceType, userId) {
         appId = consts.SPONSOR_PAY_APP_ID_DESKTOP;
     }
 
-    return chatbase.linkTrackingWrapUrl('https://rewardy.co/offers.html?uid=' + session.userData.sender.user_id, session.message.source);
+    return chatbase.linkTrackingWrapUrl('https://rewardy.co/offers.html?uid=' + session.userData.sender.user_id + '&prtnr=1', session.message.source);
 }
 
 
