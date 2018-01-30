@@ -61,7 +61,11 @@ lib.dialog('custom', [
     function (session, args) {
         session.conversationData.backState = false;
         chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'custom proactive message', null, false, false);
-        session.send(args.message);
+        let message = args.message;
+        if (message.indexOf('\\n\\r') > -1) {
+            message = message.split('\\n\\r').join('\n\r');
+        }
+        session.send(message);
 
         back_to_menu.sendBackToMainMenu(session, builder);
     }

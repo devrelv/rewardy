@@ -91,6 +91,10 @@ let BotUserSchema = new Schema({
     },
     proactive_address: {
         type: Schema.Types.Mixed
+    },
+    broadcast_messages_received: {
+        type: Array,
+        default: []
     }
 });
 
@@ -145,6 +149,28 @@ let InvitationSchema = new Schema({
     }
 });
 let Invitation = mongoose.model('Invitation', InvitationSchema);
+
+let BroadcastMessageSchema = new Schema({
+    message_id: {
+        type: String,
+        required: true
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    max_batch: {
+        type: Number,
+        default: 100,
+        required: true
+    },
+    received_users_count: {
+        type: Number,
+        required: false,
+        default: 0
+    }
+});
+let BroadcastMessage = mongoose.model('BroadcastMessage', BroadcastMessageSchema);
 
 
 
@@ -379,8 +405,17 @@ function getInvitationByInvitedEmail(invited_email) {
 function getAllBotUsers (){
     return new Promise((resolve, reject) => {        
         try {
-            // BotUser.find({user_id: 'aa29dc60-e36d-11e7-91e8-b59d09a796b9'}, (err, res) => {
-            BotUser.find({}, (err, res) => {
+            // BotUser.find({user_id: 'aa29dc60-e36d-11e7-91e8-b59d09a796b9'}, (err, res) => {  // Tal Facebook dev
+            // BotUser.find({user_id: 'dce31ab0-cdc2-11e7-a282-f70ffcb9c5b9'}, (err, res) => {  // Tal Kik dev
+            // BotUser.find(
+            //     {$or:   [{user_id: 'b8e24050-ce8f-11e7-b94b-1bf92d53b788'}, // Tal Telegram dev
+            //             {user_id: 'aa29dc60-e36d-11e7-91e8-b59d09a796b9'},  // Tal Facebook dev
+            //             {user_id: 'dce31ab0-cdc2-11e7-a282-f70ffcb9c5b9'} // Tal Kik dev
+            //             ]
+            //     }
+            // , (err, res) => {  
+            // BotUser.find({}, (err, res) => {
+            BotUser.find({user_id: 'test'}, (err, res) => {
                 if (err) {
                     logger.log.error('dal: getAllBotUsers.find error', {error: serializeError(err)});                        
                     reject(err);
@@ -393,7 +428,78 @@ function getAllBotUsers (){
             reject(err);
         }
     });
+}
 
+function getAllBotUsersForBroadcastMessage (messageId){
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.find({broadcast_messages_received: {$ne: messageId}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: getAllBotUsersForBroadcastMessage.find error', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve(res); // 143
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: getAllBotUsersForBroadcastMessage error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+}
+
+function getBroadcastMessage (messageId) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BroadcastMessage.findOne({message_id: messageId}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: getBroadcastMessage.find error', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: getBroadcastMessage error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+}
+
+function updateUserBroadcastMessagesReceived (user) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({user_id: user.user_id}, {$set: {broadcast_messages_received: user.broadcast_messages_received}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateUserBroadcastMessagesReceived.update error', {error: serializeError(err), user_id: user.user_id, broadcast_messages_received: user.broadcast_messages_received});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateUserBroadcastMessagesReceived error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
+}
+
+function updateBroadcastMessageUsersCount (message) {
+    return new Promise((resolve, reject) => {        
+        try {
+            BotUser.update({message_id: message.message_id}, {$set: {received_users_count: message.received_users_count}}, (err, res) => {
+                if (err) {
+                    logger.log.error('dal: updateBroadcastMessageUsersCount.update error', {error: serializeError(err), message_id: message.message_id, received_users_count: message.received_users_count});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } catch (err) {
+            logger.log.error('dal: updateBroadcastMessageUsersCount error', {error: serializeError(err)});
+            reject(err);
+        }
+    });
 }
 
 module.exports = {
@@ -410,6 +516,9 @@ module.exports = {
     updateUserSource: updateUserSource,
     markInvitationAsCompleted: markInvitationAsCompleted,
     getInvitationByInvitedEmail: getInvitationByInvitedEmail,
-    getAllBotUsers: getAllBotUsers
-
+    getAllBotUsers: getAllBotUsers,
+    getAllBotUsersForBroadcastMessage,
+    getBroadcastMessage,
+    updateUserBroadcastMessagesReceived,
+    updateBroadcastMessageUsersCount
 };

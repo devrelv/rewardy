@@ -205,6 +205,7 @@ bot.on('messageReaction', function (data) {
 
 
 
+
 // Cache of localized regex to match selection from main options
 var LocalizedRegexCache = {};
 function localizedRegex(session, localeKeys) {
@@ -240,27 +241,37 @@ function listen() {
 
 let proactiveMessages = require('./core/proactive_messages');
 function send_proactive_message(address, userId, messageId, messageData) {
-    try {
-        address = JSON.parse(address);
-        messageData = JSON.parse(messageData);
+    return new Promise((resolve, reject) => {
+        try {
+            address = JSON.parse(address);
+            messageData = JSON.parse(messageData);
 
-        let messageObj = proactiveMessages.getMessageToSend(address, messageId, messageData);
-        
-        if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_MESSAGE) {
-            let msg = new builder.Message().address(address);
-            msg.text(messageObj.message);
-            msg.textLocale('en-US');
-            bot.send(msg);
-        } else if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_DIALOG) {
-            bot.beginDialog(address, messageObj.message, messageData);
+            let messageObj = proactiveMessages.getMessageToSend(address, messageId, messageData);
+            
+            if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_MESSAGE) {
+                let msg = new builder.Message().address(address);
+                msg.text(messageObj.message);
+                msg.textLocale('en-US');
+                bot.send(msg);
+                resolve();
+            } else if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_DIALOG) {            
+                bot.beginDialog(address, messageObj.message, messageData, (err) => {
+                    if (err) {
+                        logger.log.error('error on send_proactive_message(bot.beginDialog)', {error: serializeError(err)});                        
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+        } catch (err) {
+            logger.log.error('error on send_proactive_message', {error: serializeError(err)});
+            reject(err);
         }
-    } catch (err) {
-        logger.log.error('error on send_proactive_message', {error: err});
-    }
-  
+    });
 }
 
-function broadcastAllUsers(message) {
+function old_broadcastAllUsers(message) {
     dal.getAllBotUsers().then(users => {
         logger.log.info('starting broadcastAllUsers - ' + users.length + ' users found');
         for (let i=0; i<users.length; i++) {
@@ -268,13 +279,80 @@ function broadcastAllUsers(message) {
                 send_proactive_message(JSON.stringify(users[i].proactive_address), users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message}));
                 logger.log.info('message sent to user' + users[i].user_id);
             } catch (err) {
-                logger.log.error('error on broadcastAllUsers for user ' + users[i].user_id, {error: err});
+                logger.log.error('error on broadcastAllUsers for user ' + users[i].user_id, {error: serializeError(err)});
             }            
         }
         logger.log.info('finished broadcastAllUsers users');
         
     });
 }
+
+function broadcastAllUsers(messageId) {
+    return new Promise((resolve, reject) => {        
+        try {
+            dal.getBroadcastMessage(messageId).then(message => {
+                dal.getAllBotUsersForBroadcastMessage(messageId).then(users => {
+                    logger.log.info(`starting broadcastAllUsers - ${users.length} users found, messageId is ${messageId}, max batch is ${message.max_batch}`);
+                    let numOfSuccess = 0;
+                    
+                    promiseFor(function(i) {
+                        // The condition
+                        return  (numOfSuccess<message.max_batch && i < users.length); 
+                    }, function(i) {
+                        // inside the for
+                        return new Promise((resolve, reject) => {
+                            send_proactive_message(JSON.stringify(users[i].proactive_address), users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message.content}))
+                            .then(()=> {
+                                logger.log.info('message sent to user ' + users[i].user_id);                    
+                                numOfSuccess++;
+                                if (!users[i].broadcast_messages_received) {
+                                    users[i].broadcast_messages_received = [];
+                                }
+                                users[i].broadcast_messages_received.push(messageId);
+                                dal.updateUserBroadcastMessagesReceived(users[i]).then(()=>{
+                                    logger.log.info('user ' + users[i].user_id + ' updated');
+                                    resolve();
+                                }).catch(err=> {
+                                logger.log.error('error on broadcastAllUsers (on dal.updateUserBroadcastMessagesReceived) cant update user ' + users[i].user_id, {error: serializeError(err)});                    
+                                reject(err);
+                            });
+                            }).catch(err => {
+                                logger.log.error('error on broadcastAllUsers (on send_proactive_message.catch) cant send to ' + users[i].user_id, {error: serializeError(err)});
+                                reject(err);
+                            });
+                        }).then(()=>{
+                            return ++i;
+                        }).catch(err=>{
+                            logger.log.error('broadcastAllUsers: error in loop for user ' + users[i].user_id, {error: serializeError(err)});
+                            return ++i;
+                        });
+                    }, 0).then(()=> {
+                        // After the for
+                        message.received_users_count += numOfSuccess;
+                        dal.updateBroadcastMessageUsersCount(message).then(()=>{
+                            logger.log.info('function done, received_users_count updated');
+                            resolve();
+                        }).catch(err=> {
+                            logger.log.error('error on broadcastAllUsers (on dal.updateBroadcastMessageUsersCount) cant update UsersCount', {error: serializeError(err)});
+                            reject(err);
+                        });
+                    }).catch(err => {
+                        logger.log.error('broadcastAllUsers: promiseFor error occured', {error: serializeError(err)});
+                        reject(err);
+                    });
+                })
+            })
+        } catch (err) {
+            logger.log.error('unknown error on broadcastAllUsers', {error: serializeError(err)});                    
+            reject(err);
+        }
+    });    
+}
+
+let promiseFor = function(condition, action, value) {
+    if (!condition(value)) return value;
+    return action(value).then(promiseFor.bind(null, condition, action));
+};
 
 // Other wrapper functions
 function beginDialog(address, dialogId, dialogArgs) {
@@ -295,5 +373,6 @@ module.exports = {
     beginDialog: beginDialog,
     sendMessage: sendMessage,
     send_proactive_message: send_proactive_message,
-    broadcastAllUsers: broadcastAllUsers
+    broadcastAllUsers: broadcastAllUsers,
+    old_broadcastAllUsers: old_broadcastAllUsers
 };
