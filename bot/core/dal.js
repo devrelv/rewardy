@@ -487,7 +487,7 @@ function updateUserBroadcastMessagesReceived (user) {
 function updateBroadcastMessageUsersCount (message) {
     return new Promise((resolve, reject) => {        
         try {
-            BotUser.update({message_id: message.message_id}, {$set: {received_users_count: message.received_users_count}}, (err, res) => {
+            BroadcastMessage.update({message_id: message.message_id}, {$set: {received_users_count: message.received_users_count}}, (err, res) => {
                 if (err) {
                     logger.log.error('dal: updateBroadcastMessageUsersCount.update error', {error: serializeError(err), message_id: message.message_id, received_users_count: message.received_users_count});                        
                     reject(err);
