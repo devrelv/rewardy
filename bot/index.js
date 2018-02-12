@@ -310,7 +310,6 @@ function broadcastAllUsers(messageId) {
                                 }
                                 users[i].broadcast_messages_received.push(messageId);
                                 dal.updateUserBroadcastMessagesReceived(users[i]).then(()=>{
-                                    logger.log.info('user ' + users[i].user_id + ' updated');
                                     resolve();
                                 }).catch(err=> {
                                 logger.log.error('error on broadcastAllUsers (on dal.updateUserBroadcastMessagesReceived) cant update user ' + users[i].user_id, {error: serializeError(err)});                    
@@ -331,7 +330,7 @@ function broadcastAllUsers(messageId) {
                         message.received_users_count += numOfSuccess;
                         dal.updateBroadcastMessageUsersCount(message).then(()=>{
                             logger.log.info('function done, received_users_count updated');
-                            resolve();
+                            resolve(numOfSuccess);
                         }).catch(err=> {
                             logger.log.error('error on broadcastAllUsers (on dal.updateBroadcastMessageUsersCount) cant update UsersCount', {error: serializeError(err)});
                             reject(err);

@@ -95,6 +95,20 @@ let BotUserSchema = new Schema({
     broadcast_messages_received: {
         type: Array,
         default: []
+    },
+    user_agent_details: {
+        country: {
+            type: String,
+            required: false
+        },
+        os_type: {
+            type: String,
+            required: false
+        },
+        device: {
+            type: String,
+            required: false
+        }
     }
 });
 
@@ -433,7 +447,8 @@ function getAllBotUsers (){
 function getAllBotUsersForBroadcastMessage (messageId){
     return new Promise((resolve, reject) => {        
         try {
-            BotUser.find({broadcast_messages_received: {$ne: messageId}}, (err, res) => {
+            // BotUser.find({broadcast_messages_received: {$ne: messageId}}, (err, res) => {
+            BotUser.find({broadcast_messages_received: {$ne: messageId}, created_at: {$gt: '2017-11-14'}}).sort({created_at: 1}).exec((err, res) => {
                 if (err) {
                     logger.log.error('dal: getAllBotUsersForBroadcastMessage.find error', {error: serializeError(err)});                        
                     reject(err);
