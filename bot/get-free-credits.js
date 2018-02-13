@@ -39,15 +39,23 @@ lib.dialog('/', [
                     // Until we have the bot.getUserDetails function, we can use this:
                     let fallbackDeviceType = consts.DEVICE_TYPE_DESKTOP;
                     dal.saveDeviceUserToDatabase(session.userData.sender.user_id, fallbackDeviceType);
-                    sendUserOfferWallUrl(session, fallbackDeviceType, session.userData.sender.user_id);
+                    sendUserOfferWallUrl(session, fallbackDeviceType, session.userData.sender.user_id).then(()=>{
+                        if (!session.conversationData.onboarding) {
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                        } else {
+                            session.replaceDialog('onboarding:back_from_task_or_invite');                    
+                        }
+                    });
                 } else {
-                    sendUserOfferWallUrl(session, userResult.type, session.userData.sender.user_id);                
+                    sendUserOfferWallUrl(session, userResult.type, session.userData.sender.user_id).then(()=> {
+                        if (!session.conversationData.onboarding) {
+                            back_to_menu.sendBackToMainMenu(session, builder);
+                        } else {
+                            session.replaceDialog('onboarding:back_from_task_or_invite');                    
+                        }
+                    });                
                 }
-                if (!session.conversationData.onboarding) {
-                    back_to_menu.sendBackToMainMenu(session, builder);
-                } else {
-                    session.replaceDialog('onboarding:back_from_task_or_invite');                    
-                }
+                
             }).catch(err => {
                 logger.log.error('get-free-credits: dal.getDeviceByUserId error', {error: serializeError(err)});
                 sendUserOfferWallUrl(session, consts.DEVICE_TYPE_DESKTOP, session.userData.sender.user_id);
@@ -61,8 +69,14 @@ lib.dialog('/', [
 ]);
 
 function sendUserOfferWallUrl(session, deviceType, userId) {
-    chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('getCredit.intro') + '\n\r' + offerWallLinkForUser(session, deviceType, userId), null, false, false);                
-    session.send(session.gettext('getCredit.intro') + '\n\r' + offerWallLinkForUser(session, deviceType, userId));
+    return new Promise((resolve, reject) => {
+        offerWallLinkForUser(session, deviceType, userId).then(url => {
+            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('getCredit.intro') + '\n\r' + url, null, false, false);
+            session.send(session.gettext('getCredit.intro') + '\n\r' + url);
+            resolve();
+        })
+    })
+    
 }
 
 function offerWallLinkForUser(session, deviceType, userId) {

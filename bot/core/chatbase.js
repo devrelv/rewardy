@@ -88,9 +88,20 @@ function sendMultipleMessages(arrayOfMessage) {
     
 }
 
+const BitlyClient = require('bitly');
+const bitly = BitlyClient('f331500e9af349f1959450531739000225f84478');
+
 function linkTrackingWrapUrl(url, platform) {
-    platform = platform || 'unknown';
-    return 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + encodeURIComponent(url) + '&platform=' + platform;
+    return new Promise((resolve, reject)=> {
+        platform = platform || 'unknown';
+        let fullUrl = 'https://chatbase.com/r?api_key=' + process.env.CHATBASE_API_KEY + '&url=' + encodeURIComponent(url) + '&platform=' + platform;
+        bitly.shorten(fullUrl).then(newUrl => {
+            resolve(newUrl.data.url);
+        }).catch(err => {
+            logger.log.error('chatBase: linkTrackingWrapUrl error occurred', {error: serializeError(err)});                    
+            resolve(fullUrl)
+        })
+    });
 }
 
 module.exports = {

@@ -1,19 +1,19 @@
 {
     "keyboard.root.title": "Hey! please select one of the following options 👇",
-    "keyboard.root.checkCredit": "Check credit 🔍",
-    "keyboard.root.redeem": "Redeem 🛍",
-    "keyboard.root.inviteFriends": "Invite friends for free credit 😎",
-    "keyboard.root.getCredit": "Get FREE credit! 💎",
+    "keyboard.root.checkCredit": "Check your points 🔍",
+    "keyboard.root.redeem": "Get vouchers 🛍",
+    "keyboard.root.inviteFriends": "Invite friends for points 😎",
+    "keyboard.root.getCredit": "Get FREE points! 💎",
     "keyboard.root.help": "Get help ✋",
     "keyboard.root.fillEmail": "Fill details ✏",
     "main.root.title": "What would you like to do now?",
     "main_options_talk_to_support": "Talk to support",
     "main_options_settings": "Settings",
     "help": "Help",
-    "thank_you": "Support will contact you shortly. Have a nice day :)",
-    "checkCredit.loading": "Calculating your credit...",
+    "thank_you": "Our support representative will contact you shortly. Have a nice day :)",
+    "checkCredit.loading": "Calculating your points...",
     "error.couldNotFindUser" : "That is weird! I could not find your user details. Please leave the bot and try again.",
     "error_occurred_try_again": "Ohh no.. error occurred. Please try again",
     "unknown_user_command" : "Sorry! I could not understand you. Please use the following quick replies",
-    "welcome_new_user_message": "Hello and welcome to Rewardy.co!\n\rYou can earn points by trying tasks (such as discover awesome apps, answer a survey) and redeem points for gift cards\n\rLet's get started! 👻👻👻"
+    "welcome_new_user_message": "Hello and welcome to Rewardy!\n\rYou can earn points by trying tasks (such as discover awesome apps, answer a survey) and redeem points for gift cards\n\rLet's get started! 👻👻👻"
 }

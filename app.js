@@ -69,8 +69,11 @@ app.get('/broadcast_all_users', (req,res) => {
   if (key != '1234') {
     res.send('Wrong Key');
   } else {
-    bot.broadcastAllUsers(message);    
-    res.send('Done');
+    bot.broadcastAllUsers(message).then(updatedUsersCount=> {
+      res.send('Done: ' + updatedUsersCount + ' users updated');
+    }).catch(err=>{
+      res.json(err);
+    });    
   }
 });
 
