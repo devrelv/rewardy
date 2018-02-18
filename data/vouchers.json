@@ -22,6 +22,17 @@
 		"actionDescription": "shopping"
 	},
 	{
+		"id": "$5 on Steam",
+		"title": "$5 Steam Gift Card for 800 points",
+		"emailTitle": "$5 Gift Card on Steam",
+		"store": "Steam",
+		"description": "Online Shopping for Electronics, Apparel, Books & more",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/steam.jpg",
+		"points": 800,
+		"cta": "800 points",
+		"actionDescription": "playing awesome games"
+	},
+	{
 		"id": "$5 on Amazon",
 		"title": "$5 Amazon Gift Card for 800 points",
 		"emailTitle": "$5 Gift Card on Amazon",
@@ -86,6 +97,17 @@
 		"points": 1700,
 		"cta": "1,700 points",
 		"actionDescription": "shopping"
+	},
+	{
+		"id": "$10 on Steam",
+		"title": "$10 Steam Gift Card for 1,700 points",
+		"emailTitle": "$10 Gift Card on Steam",
+		"store": "Steam",
+		"description": "Online Shopping for Electronics, Apparel, Books & more",
+		"imageUrl": "https://raw.githubusercontent.com/rewardy/assets/master/vouchers/steam.jpg",
+		"points": 1700,
+		"cta": "1,700 points",
+		"actionDescription": "playing awesome games"
 	},
 	{
 		"id": "$10 on Amazon",
