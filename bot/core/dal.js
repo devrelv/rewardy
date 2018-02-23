@@ -448,7 +448,8 @@ function getAllBotUsersForBroadcastMessage (messageId){
     return new Promise((resolve, reject) => {        
         try {
             // BotUser.find({broadcast_messages_received: {$ne: messageId}}, (err, res) => {
-            BotUser.find({broadcast_messages_received: {$ne: messageId}, created_at: {$gt: '2017-11-14'}}).sort({created_at: 1}).exec((err, res) => {
+            //BotUser.find({broadcast_messages_received: {$ne: messageId}, created_at: {$gt: '2017-11-14', $lte: '2018-02-13'}}).sort({created_at: 1}).exec((err, res) => {
+            BotUser.find({"broadcast_messages_received": {"$ne": messageId}, "created_at": {"$gt": "2017-11-14"}, "proactive_address.channelId" : "kik"}).sort({created_at: 1}).exec((err, res) => {
                 if (err) {
                     logger.log.error('dal: getAllBotUsersForBroadcastMessage.find error', {error: serializeError(err)});                        
                     reject(err);
