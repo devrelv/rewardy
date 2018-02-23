@@ -23,11 +23,11 @@ lib.dialog('/', [
                     session.say(session.gettext('invite.invited_friends', invitedFriends.length));                
                 }
             }
-            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('invite.explanation', consts.referralBonusPoints, consts.minimumCompletedOffersForReferalToCount) + '\n\r' + session.gettext('invite.before_link'), null, false, false);                                        
-            session.say(session.gettext('invite.explanation', consts.referralBonusPoints, consts.minimumCompletedOffersForReferalToCount) + '\n\r' + session.gettext('invite.before_link'));
+            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, session.gettext('invite.explanation', consts.referralBonusPoints) + '\n\r' + session.gettext('invite.before_link'), null, false, false);                                        
+            session.say(session.gettext('invite.explanation', consts.referralBonusPoints) + '\n\r' + session.gettext('invite.before_link'));
             // TODO: Change the URL from someUrl.com to the real one (when available)
-            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'http://rewardy.co/invite.html?referrer=' + session.userData.sender.user_id, null, false, false);                                        
-            session.say('http://rewardy.co/invite.html?referrer=' + session.userData.sender.user_id);
+            chatbase.sendSingleMessage(chatbase.CHATBASE_TYPE_FROM_BOT, session.userData.sender ? session.userData.sender.user_id : 'unknown', session.message.source, 'https://rewardy.co/invite.html?referrer=' + session.userData.sender.user_id, null, false, false);                                        
+            session.say('https://rewardy.co/invite.html?referrer=' + session.userData.sender.user_id);
             if (!session.conversationData.onboarding) {
                 back_to_menu.sendBackToMainMenu(session, builder);                
             } else {
