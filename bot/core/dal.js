@@ -22,9 +22,14 @@ const serializeError = require('serialize-error');
 // };
 
 logger.log.info('####### connecting to the database #######');
-// mongoose.connect(process.env.MONGO_CONNECTION_STRING, mongodbOptions);
+let mongoConnectionString = '';
+if (process.env.CURRENT_ENV == 'PROD') {
+    mongoConnectionString = process.env.PROD_MONGO_CONNECTION_STRING;
+} else {
+    mongoConnectionString = process.env.DEV_MONGO_CONNECTION_STRING;
+}
 mongoose.Promise = require('bluebird');
-mongoose.connect(process.env.MONGO_CONNECTION_STRING, {useMongoClient: true}).then(
+mongoose.connect(mongoConnectionString, {useMongoClient: true}).then(
     ()=>{
     logger.log.info('dal: connected to database');        
     }

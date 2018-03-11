@@ -90,7 +90,7 @@ lib.dialog('userDetails', [
                             dal.getBotUserById(invitationDetails.inviting_user_id).then(invitingUser => {
                                 var index = require('./index');
                                 var proactiveMessageData = {friendName:  result.response,num_of_tasks_for_referral: consts.minimumCompletedOffersForReferalToCount};
-                                index.send_proactive_message(JSON.stringify(invitingUser.proactive_address), invitingUser.user_id, consts.PROACTIVE_MESSAGES_REFERRAL_JOINED, JSON.stringify(proactiveMessageData));
+                                index.send_proactive_message(invitingUser.user_id, consts.PROACTIVE_MESSAGES_REFERRAL_JOINED, JSON.stringify(proactiveMessageData), JSON.stringify(invitingUser.proactive_address));
                             });
                             detailsCompletedSuccess(session, userEmail, result.response);
                             

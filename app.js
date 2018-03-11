@@ -54,12 +54,13 @@ app.use('/viber/webhook', viberChannel.listen());
 app.use(bodyParser.json()); // Only the next lines should be on json
 
 app.post('/api/messages', bot.listen());
+
+// Example : http://localhost:3978/proactive?message_id=5&message_data={"message":"Hey!%3Cbr%2F%3EThis%20is%20Emma%20from%20Rewardy."}&user_id=test
 app.get('/proactive', (req,res) => {
-  var address = req.query.message_address;
   var messageId = req.query.message_id;
   var messageData = req.query.message_data;
   var userId = req.query.user_id;
-  bot.send_proactive_message(address, userId, messageId, messageData);
+  bot.send_proactive_message(userId, messageId, messageData);
   res.send('Done');
 });
 

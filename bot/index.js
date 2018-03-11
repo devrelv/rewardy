@@ -8,11 +8,21 @@ const serializeError = require('serialize-error');
 const chatbase = require('./core/chatbase');
 var uuid = require('uuid');
 
-logger.log.info('Bot started on MICROSOFT_APP_ID ' + process.env.MICROSOFT_APP_ID);
+let ms_app_id = '';
+let ms_app_password = '';
+if (process.env.CURRENT_ENV == 'PROD') {
+    ms_app_id = process.env.PROD_MICROSOFT_APP_ID;
+    ms_app_password = process.env.PROD_MICROSOFT_APP_PASSWORD;
+} else {
+    ms_app_id = process.env.DEV_MICROSOFT_APP_ID;
+    ms_app_password = process.env.DEV_MICROSOFT_APP_PASSWORD;
+}
+
+logger.log.info('Bot started on ' + process.env.CURRENT_ENV);
 
 var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appId: ms_app_id,
+    appPassword: ms_app_password
 });
 
 // Mail sending tests
@@ -240,28 +250,28 @@ function listen() {
 }
 
 let proactiveMessages = require('./core/proactive_messages');
-function send_proactive_message(address, userId, messageId, messageData) {
+function send_proactive_message(userId, messageId, messageData, address) {
     return new Promise((resolve, reject) => {
         try {
-            address = JSON.parse(address);
             messageData = JSON.parse(messageData);
-
-            let messageObj = proactiveMessages.getMessageToSend(address, messageId, messageData);
-            
-            if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_MESSAGE) {
-                let msg = new builder.Message().address(address);
-                msg.text(messageObj.message);
-                msg.textLocale('en-US');
-                bot.send(msg);
-                resolve();
-            } else if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_DIALOG) {            
-                bot.beginDialog(address, messageObj.message, messageData, (err) => {
-                    if (err) {
-                        logger.log.error('error on send_proactive_message(bot.beginDialog)', {error: serializeError(err)});                        
-                        reject(err);
-                    } else {
+            if (address) {
+                send_proactive_message_with_address(messageId, messageData, address).then(()=>{
+                    resolve();
+                }).catch(err => {
+                    logger.log.error('error on send_proactive_message_with_address', {error: serializeError(err)});
+                    reject(err);
+                })
+            } else {
+                dal.getBotUserById(userId).then(botUser => {
+                    send_proactive_message_with_address(messageId, messageData, botUser.proactive_address).then(()=>{
                         resolve();
-                    }
+                    }).catch(err => {
+                        logger.log.error('error on send_proactive_message_with_address', {error: serializeError(err)});
+                        reject(err);
+                    })
+                }).catch(err => {
+                    logger.log.error('error on dal.getBotUserById', {error: serializeError(err)});
+                    reject(err);
                 });
             }
         } catch (err) {
@@ -271,12 +281,35 @@ function send_proactive_message(address, userId, messageId, messageData) {
     });
 }
 
+function send_proactive_message_with_address(messageId, messageData, address) {
+    return new Promise((resolve, reject) => {    
+        let messageObj = proactiveMessages.getMessageToSend(address, messageId, messageData);
+                
+        if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_MESSAGE) {
+            let msg = new builder.Message().address(address);
+            msg.text(messageObj.message);
+            msg.textLocale('en-US');
+            bot.send(msg);
+            resolve();
+        } else if (messageObj.type == consts.PROACTIVE_MESSAGES_TYPE_DIALOG) {            
+            bot.beginDialog(address, messageObj.message, messageData, (err) => {
+                if (err) {
+                    logger.log.error('error on send_proactive_message_with_address(bot.beginDialog)', {error: serializeError(err)});                        
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        }
+    });
+}
+
 function old_broadcastAllUsers(message) {
     dal.getAllBotUsers().then(users => {
         logger.log.info('starting broadcastAllUsers - ' + users.length + ' users found');
         for (let i=0; i<users.length; i++) {
             try {
-                send_proactive_message(JSON.stringify(users[i].proactive_address), users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message}));
+                send_proactive_message(users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message}), JSON.stringify(users[i].proactive_address));
                 logger.log.info('message sent to user' + users[i].user_id);
             } catch (err) {
                 logger.log.error('error on broadcastAllUsers for user ' + users[i].user_id, {error: serializeError(err)});
@@ -301,7 +334,7 @@ function broadcastAllUsers(messageId) {
                     }, function(i) {
                         // inside the for
                         return new Promise((resolve, reject) => {
-                            send_proactive_message(JSON.stringify(users[i].proactive_address), users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message.content}))
+                            send_proactive_message(users[i].user_id, consts.PROACTIVE_MESSAGES_CUSTOM, JSON.stringify({message: message.content}), JSON.stringify(users[i].proactive_address))
                             .then(()=> {
                                 logger.log.info('message sent to user ' + users[i].user_id);                    
                                 numOfSuccess++;
