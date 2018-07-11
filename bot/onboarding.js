@@ -61,9 +61,9 @@ lib.dialog('show_stores', [
                 stores[currentVoucher.store].vouchers.push(currentVoucher);
             });
             
-            if (!session.conversationData.storeRequested) {
-                storesButtons.push(builder.CardAction.imBack(session, session.gettext('onboarding.other_voucher'), session.gettext('onboarding.other_voucher')));                
-            }
+            //if (!session.conversationData.storeRequested) {
+            //    storesButtons.push(builder.CardAction.imBack(session, session.gettext('onboarding.other_voucher'), session.gettext('onboarding.other_voucher')));                
+            //}
             if (!session.conversationData.storeRequested && !session.conversationData.backState) {
                 session.say('onboarding.choose_voucher_store');
             }
